@@ -11,3 +11,5 @@ torchaudio==2.4.1
 torchvision==0.19.1
 pandas==2.2.3
 kaggle==1.6.17
+matplotlib==3.9.2
+transformers==4.45.1
