@@ -1,15 +1,17 @@
 import json
-import pickle
-import time
-import torch
-import re
-import torch.nn as nn
-import numpy as np
-import nltk
-from sklearn.feature_extraction.text import CountVectorizer
-from torch import tensor
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
+from temporalio import workflow
+
+with workflow.unsafe.imports_passed_through():
+    import dill as pickle
+    import time
+    import torch
+    import re
+    import torch.nn as nn
+    import numpy as np
+    import nltk
+    from torch import tensor
+    from nltk.corpus import stopwords
+    from nltk.stem import PorterStemmer
 
 
 nltk.download('stopwords')
@@ -55,16 +57,9 @@ class PhishingDetectorModel(nn.Module):
         return x
 
 
-# Loading pretrained model and vectorized, that were trained in "model.ipynb"
-with open("model.pkl", "rb") as file:
-    model = pickle.load(file)
-with open("vocab.pkl", "rb") as file:
-    vectorizer = pickle.load(file)
-
-
 # Core logic function that will serve like an interface
 def predict_email(
-        email: str, model: PhishingDetectorModel, vectorizer: CountVectorizer, device: str, top_n: int = 5
+        email: str, model, vectorizer, top_n: int = 5
 ) -> str:
     model.eval()
     time_before = time.time()
@@ -107,7 +102,9 @@ def predict_email(
     return json.dumps(formatted_output)
 
 
-if __name__ == "__main__":
-    while True:
-        email = input("email: ")
-        print(predict_email(email, model, vectorizer, device))
+if __name__ == '__main__':
+    # Loading pretrained model and vectorized, that were trained in "model.ipynb"
+    with open("./vocab.pkl", "rb") as file:
+        vectorizer = pickle.load(file)
+    with open("./model.pkl", "rb") as file:
+        model = pickle.load(file)

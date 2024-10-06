@@ -162,6 +162,6 @@ cython_debug/
 model/data/downloads
 model/data/csvs
 model/data/data.csv
-model/vocab.pkl
-model/train_data.pkl
-model/model.pkl
+model/core/vocab.pkl
+model/core/train_data.pkl
+model/core/model.pkl

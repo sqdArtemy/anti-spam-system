@@ -15,3 +15,5 @@ matplotlib
 transformers
 scikit-learn
 nltk
+temporalio
+dill
