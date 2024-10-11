@@ -1,6 +1,9 @@
 import pytesseract
 import platform
 from PIL import Image, ImageEnhance, ImageFilter
+from minio import Minio
+
+from core.image_loader import get_image
 
 
 def set_tesseract():
@@ -8,8 +11,7 @@ def set_tesseract():
         pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
-def preprocess_image(image_path: str) -> Image:
-    image = Image.open(image_path)
+def preprocess_image(image: Image.Image) -> Image.Image:
     image = image.convert("L")
 
     enhancer = ImageEnhance.Contrast(image)
@@ -22,10 +24,16 @@ def preprocess_image(image_path: str) -> Image:
     return image
 
 
-def extract_text_from_image(image_path: str) -> str:
+def extract_text_from_image(minio_client: Minio, image_path: str) -> str:
     set_tesseract()
+    bucket_name, file_name = image_path.split('/')
 
-    image = preprocess_image(image_path)
+    image = get_image(
+        minio_client=minio_client,
+        bucket_name=bucket_name,
+        file_name=file_name
+    )
+    image = preprocess_image(image)
     text = pytesseract.image_to_string(image, lang='eng')
 
     return text

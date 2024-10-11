@@ -1,4 +1,5 @@
 import json
+import logging
 import re
 from temporalio import workflow
 
@@ -19,13 +20,16 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 def preprocess_text(text: str) -> str:
+    logging.info("Start preprocessing text.")
     lower_text = text.lower()
     text_without_links = re.sub(r'http\S+|www\S+|https\S+', '', lower_text, flags=re.MULTILINE)
     plain_text = re.sub(r'[^a-zA-Z\s]', '', text_without_links)
+    logging.info("Finish preprocessing text.")
     return plain_text
 
 
 def tokenizer(text) -> list[str]:
+    logging.info("Start tokenizing text.")
     stemmer = PorterStemmer()
     tokens = re.findall(r'\b\w+\b', text)
 
@@ -33,6 +37,7 @@ def tokenizer(text) -> list[str]:
     tokens = [word for word in tokens if word not in stop_words]
 
     tokens = [stemmer.stem(word) for word in tokens]
+    logging.info("Finish tokenizing text.")
     return tokens
 
 
@@ -61,10 +66,12 @@ class PhishingDetectorModel(nn.Module):
 def predict_email(
         email: str, model, vectorizer, top_n: int = 5
 ) -> str:
+    logging.info("Start analyzing email.")
     model.eval()
     time_before = time.time()
 
     # Vectorizing and transforming mail to a matrix
+    logging.info("Transforming mail to tensor.")
     email_csrmatrix = vectorizer.transform([email])
     email_coomatrix = email_csrmatrix.tocoo()
     indices = tensor(np.array([email_coomatrix.row, email_coomatrix.col])).to(device)
@@ -72,6 +79,7 @@ def predict_email(
     email_tensor = torch.sparse_coo_tensor(indices, values, torch.Size(email_coomatrix.shape)).to_dense().to(device)
 
     with torch.no_grad():
+        logging.info("Predicting email by using model.")
         # Predicting and selecting important words
         outputs = model(email_tensor)
         _, prediction = torch.max(outputs, 1)
@@ -98,6 +106,7 @@ def predict_email(
         "important_words": list(zip(important_words, important_scores)),
         "time_taken": time_taken,
     }
+    logging.info(f"Finished analyzing email in {time_taken} seconds.")
 
     return json.dumps(formatted_output)
 
@@ -105,6 +114,9 @@ def predict_email(
 if __name__ == '__main__':
     # Loading pretrained model and vectorized, that were trained in "model.ipynb"
     with open("./vocab.pkl", "rb") as file:
+        logging.info("Loading vocabulary for vectorization.")
         vectorizer = pickle.load(file)
+
     with open("./model.pkl", "rb") as file:
+        logging.info("Loading model for prediction.")
         model = pickle.load(file)

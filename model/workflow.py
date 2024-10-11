@@ -3,6 +3,7 @@ import logging
 from datetime import timedelta
 from temporalio import activity, workflow
 with workflow.unsafe.imports_passed_through():
+    from minio import Minio
     from core.model_interface import predict_email
     from core.text_extractor import extract_text_from_image
 
@@ -27,10 +28,16 @@ class AnalyzeEmailActivity:
 
 
 class ExtractTextActivity:
+    def __init__(self, minio_client: Minio):
+        self.minio_client = minio_client
+
     @activity.defn
     async def extract_text(self, image_path: str) -> str:
         logging.info(f"Extracting text from image: {image_path}")
-        text = extract_text_from_image(image_path)
+        text = extract_text_from_image(
+            image_path=image_path,
+            minio_client=self.minio_client
+        )
         logging.info(f"Extracted text: {text}")
         return text
 

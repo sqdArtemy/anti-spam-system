@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from minio import Minio
 from temporalio.client import Client
 from temporalio.worker import Worker
 from temporalio import workflow as wf
@@ -16,12 +17,19 @@ from workflow import AnalyzeEmailWorkflow, AnalyzeEmailActivity, ExtractTextActi
 
 
 async def main():
-    client = await Client.connect("localhost:7233")
+    temporal_client = await Client.connect("localhost:7233")
+    minio_client = Minio(
+        "localhost:9000",
+        access_key="minioadmin",
+        secret_key="minioadmin",
+        secure=False,
+    )
+
     activity = AnalyzeEmailActivity(model=model, vectorizer=vectorizer)
-    text_extract_activity = ExtractTextActivity()
+    text_extract_activity = ExtractTextActivity(minio_client=minio_client)
 
     worker = Worker(
-        client,
+        temporal_client,
         task_queue="analyze-tasks",
         workflows=[AnalyzeEmailWorkflow],
         activities=[activity.analyze_email, text_extract_activity.extract_text],
