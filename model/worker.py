@@ -24,7 +24,7 @@ async def main():
         client,
         task_queue="analyze-tasks",
         workflows=[AnalyzeEmailWorkflow],
-        activities=[activity.analyze_email],
+        activities=[activity.analyze_email, text_extract_activity.extract_text],
     )
 
     await worker.run()
