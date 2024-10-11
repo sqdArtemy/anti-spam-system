@@ -1,9 +1,11 @@
 import asyncio
+import os
 import logging
 from minio import Minio
 from temporalio.client import Client
 from temporalio.worker import Worker
 from temporalio import workflow as wf
+from dotenv import load_dotenv
 with wf.unsafe.imports_passed_through():
     import dill as pickle
     from core.model_interface import predict_email, preprocess_text, tokenizer
@@ -17,12 +19,12 @@ from workflow import AnalyzeEmailWorkflow, AnalyzeEmailActivity, ExtractTextActi
 
 
 async def main():
-    temporal_client = await Client.connect("localhost:7233")
+    temporal_client = await Client.connect(os.getenv("TEMPORAL_URL"))
     minio_client = Minio(
-        "localhost:9000",
-        access_key="minioadmin",
-        secret_key="minioadmin",
-        secure=False,
+        os.getenv("MINIO_ENDPOINT"),
+        access_key=os.getenv("MINIO_ACCESS_KEY"),
+        secret_key=os.getenv("MINIO_SECRET_KEY"),
+        secure=bool(os.getenv("MINIO_SECURE")),
     )
 
     activity = AnalyzeEmailActivity(model=model, vectorizer=vectorizer)
@@ -30,7 +32,7 @@ async def main():
 
     worker = Worker(
         temporal_client,
-        task_queue="analyze-tasks",
+        task_queue=os.getenv("TASK_QUEUE"),
         workflows=[AnalyzeEmailWorkflow],
         activities=[activity.analyze_email, text_extract_activity.extract_text],
     )
@@ -40,4 +42,5 @@ async def main():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+    load_dotenv()
     asyncio.run(main())

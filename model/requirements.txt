@@ -19,3 +19,4 @@ temporalio
 dill
 pytesseract
 minio
+python-dotenv

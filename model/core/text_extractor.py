@@ -1,3 +1,4 @@
+import os
 import pytesseract
 import platform
 from PIL import Image, ImageEnhance, ImageFilter
@@ -7,8 +8,8 @@ from core.image_loader import get_image
 
 
 def set_tesseract():
-    if platform.system() == 'Windows':
-        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    if platform.system() == "Windows":
+        pytesseract.pytesseract.tesseract_cmd = rf'{os.getenv("WINDOWS_TESSERACT_PATH")}'
 
 
 def preprocess_image(image: Image.Image) -> Image.Image:

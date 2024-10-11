@@ -1,10 +1,13 @@
 import asyncio
+import os
 import json
 
 from temporalio.client import Client
 from workflow import AnalyzeEmailWorkflow
+from dotenv import load_dotenv
 
 
+load_dotenv()
 email = """Dear Customer,
 
 To ensure the continued security of your account, we need you to update your account details. Please verify your information by October 5th, 2024 to avoid any disruption in service.
@@ -26,7 +29,7 @@ async def start_workflow():
         AnalyzeEmailWorkflow.run,
         json.dumps({'email': email, 'image_path': ''}),
         id="analyze-email-workflow-id",
-        task_queue="analyze-tasks"
+        task_queue=os.getenv('TASK_QUEUE'),
     )
 
     print(f"Workflow result: {result}")
@@ -35,7 +38,7 @@ async def start_workflow():
         AnalyzeEmailWorkflow.run,
         json.dumps({'email': '', 'image_path': 'images/test.png'}),
         id="analyze-email-workflow-id",
-        task_queue="analyze-tasks"
+        task_queue=os.getenv('TASK_QUEUE'),
     )
 
     print(f"Workflow result 2: {result_2}")
