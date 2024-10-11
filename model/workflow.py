@@ -14,13 +14,17 @@ class AnalyzeEmailActivity:
         self.vectorizer = vectorizer
 
     @activity.defn
-    async def analyze_email(self, email: str) -> str:
+    async def analyze_email(self, data: str) -> str:
+        json_data = json.loads(data)
+        email = json_data.get("email")
+        words_number = int(json_data.get("words_number"))
+
         logging.info(f"Analyzing email: {email}")
         result = predict_email(
             email=email,
             model=self.model,
             vectorizer=self.vectorizer,
-            top_n=5
+            top_n=words_number
         )
         logging.info(f"Analysis result: {result}")
 
@@ -46,9 +50,8 @@ class ExtractTextActivity:
 class AnalyzeEmailWorkflow:
     @workflow.run
     async def run(self, data: str) -> str:
-        data_json = json.loads(data)
-        email = data_json.get("email")
-        image_path = data_json.get("image_path")
+        json_data = json.loads(data)
+        image_path = json_data.get("image_path")
 
         if image_path:
             email = await workflow.execute_activity(
@@ -56,9 +59,10 @@ class AnalyzeEmailWorkflow:
                 image_path,
                 schedule_to_close_timeout=timedelta(seconds=10)
             )
+            json_data["email"] = email
 
         return await workflow.execute_activity(
             AnalyzeEmailActivity.analyze_email,
-            email,
+            json.dumps(json_data),
             schedule_to_close_timeout=timedelta(seconds=10)
         )
