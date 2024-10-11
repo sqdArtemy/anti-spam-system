@@ -17,3 +17,5 @@ scikit-learn
 nltk
 temporalio
 dill
+pillow
+pytesseract
