@@ -12,12 +12,13 @@ with wf.unsafe.imports_passed_through():
     with open("./core/model.pkl", "rb") as file:
         model = pickle.load(file)
 
-from workflow import AnalyzeEmailWorkflow, AnalyzeEmailActivity
+from workflow import AnalyzeEmailWorkflow, AnalyzeEmailActivity, ExtractTextActivity
 
 
 async def main():
     client = await Client.connect("localhost:7233")
     activity = AnalyzeEmailActivity(model=model, vectorizer=vectorizer)
+    text_extract_activity = ExtractTextActivity()
 
     worker = Worker(
         client,

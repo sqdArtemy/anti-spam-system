@@ -1,4 +1,6 @@
 import asyncio
+import json
+
 from temporalio.client import Client
 from workflow import AnalyzeEmailWorkflow
 
@@ -22,7 +24,7 @@ async def start_workflow():
 
     result = await client.execute_workflow(
         AnalyzeEmailWorkflow.run,
-        email,
+        json.dumps({'email': email, 'image_path': ''}),
         id="analyze-email-workflow-id",
         task_queue="analyze-tasks"
     )
@@ -31,7 +33,7 @@ async def start_workflow():
 
     result_2 = await client.execute_workflow(
         AnalyzeEmailWorkflow.run,
-        "I LOVE SEX SEX SEX SEX SEX, I WANT BIG TITS AND COCKS AND ASSES!!!! ANd ALSO MORE FREE WHORES!",
+        json.dumps({'email': '', 'image_path': './test.png'}),
         id="analyze-email-workflow-id",
         task_queue="analyze-tasks"
     )

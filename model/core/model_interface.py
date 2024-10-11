@@ -1,11 +1,11 @@
 import json
+import re
 from temporalio import workflow
 
 with workflow.unsafe.imports_passed_through():
     import dill as pickle
     import time
     import torch
-    import re
     import torch.nn as nn
     import numpy as np
     import nltk
