@@ -23,7 +23,7 @@ Customer Support
 
 
 async def start_workflow():
-    client = await Client.connect("localhost:7233")
+    client = await Client.connect(os.getenv("TEMPORAL_URL"))
 
     result = await client.execute_workflow(
         AnalyzeEmailWorkflow.run,
