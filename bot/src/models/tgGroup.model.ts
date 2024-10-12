@@ -1,4 +1,4 @@
-import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
+import { BuildOptions, DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { TgGroupMemberModel } from "./tgGroupMember.model";
 
 export interface TgGroupAttributes {
@@ -16,8 +16,10 @@ export interface TgGroupAttributes {
   members?: TgGroupMemberModel[];
 }
 
+interface TgGroupCreationAttributes extends Optional<TgGroupAttributes, "id"> {}
+
 export interface TgGroupModel
-  extends Model<TgGroupAttributes>,
+  extends Model<TgGroupAttributes, TgGroupCreationAttributes>,
     TgGroupAttributes {}
 
 export class TgGroup extends Model<TgGroupModel, TgGroupAttributes> {}
