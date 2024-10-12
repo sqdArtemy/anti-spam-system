@@ -17,6 +17,3 @@ scikit-learn
 nltk
 temporalio
 dill
-pytesseract
-minio
-python-dotenv
