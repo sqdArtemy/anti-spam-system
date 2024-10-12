@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "SET NODE_ENV=local&&ts-node-dev src/server.ts"
+    "start": "ts-node-dev src/bot.ts"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +14,7 @@
     "@types/node-telegram-bot-api": "^0.64.7",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
+    "grammy": "^1.30.0",
     "minio": "^7.1.3",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.45",
@@ -32,6 +33,5 @@
     "@babel/preset-typescript": "^7.23.3",
     "@types/minio": "^7.1.1",
     "@types/morgan": "^1.9.9"
-  },
-  "type": "module"
+  }
 }
