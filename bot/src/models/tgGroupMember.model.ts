@@ -1,4 +1,6 @@
 import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
+import { CheckRequestModel } from "./checkRequest.model";
+import { TgGroupModel } from "./tgGroup.model";
 
 export interface TgGroupMemberAttributes {
   id?: number;
@@ -10,6 +12,8 @@ export interface TgGroupMemberAttributes {
   isBlacklisted?: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  checkRequests?: CheckRequestModel[];
+  group?: TgGroupModel | null;
 }
 
 export interface TgGroupMemberModel

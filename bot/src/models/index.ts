@@ -1,8 +1,8 @@
 import { databaseConfig } from "./config";
 
-import { TgGroupFactory } from "./tgGroupModel";
-import { TgGroupMemberFactory } from "./tgGroupMemberModel";
-import { CheckRequestFactory } from "./checkRequestModel";
+import { TgGroupFactory } from "./tgGroup.model";
+import { TgGroupMemberFactory } from "./tgGroupMember.model";
+import { CheckRequestFactory } from "./checkRequest.model";
 
 export const TgGroup = TgGroupFactory(databaseConfig);
 export const TgGroupMember = TgGroupMemberFactory(databaseConfig);

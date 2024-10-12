@@ -1,4 +1,5 @@
 import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
+import { TgGroupMemberModel } from "./tgGroupMember.model";
 
 export interface TgGroupAttributes {
   id?: number;
@@ -12,6 +13,7 @@ export interface TgGroupAttributes {
   spamMinConfidence?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  members?: TgGroupMemberModel[];
 }
 
 export interface TgGroupModel

@@ -1,4 +1,5 @@
 import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
+import { TgGroupMember, TgGroupMemberModel } from "./tgGroupMember.model";
 
 export interface CheckRequestAttributes {
   id?: number;
@@ -12,6 +13,7 @@ export interface CheckRequestAttributes {
   wordsCount: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  tgGroupMember?: TgGroupMemberModel | null;
 }
 
 export interface CheckRequestModel
