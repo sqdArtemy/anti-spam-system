@@ -3,7 +3,7 @@ import { TgGroupMemberModel } from "./tgGroupMember.model";
 
 export interface TgGroupAttrs {
   id?: number;
-  externalGroupId: number;
+  externalGroupId?: number;
   botEnabled?: boolean;
   banEnabled?: boolean;
   muteEnabled?: boolean;
@@ -82,8 +82,8 @@ export function TgGroupFactory(sequelize: Sequelize): TgGroupStatic {
       },
     },
     {
-      createdAt: true,
-      updatedAt: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
       freezeTableName: true,
     }
   );

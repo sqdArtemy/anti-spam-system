@@ -74,8 +74,8 @@ export function CheckRequestFactory(sequelize: Sequelize): CheckRequestStatic {
       },
     },
     {
-      createdAt: true,
-      updatedAt: true,
+      createdAt: false,
+      updatedAt: false,
       freezeTableName: true,
     }
   );

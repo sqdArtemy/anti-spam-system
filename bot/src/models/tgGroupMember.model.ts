@@ -6,7 +6,7 @@ export interface TgGroupMemberAttrs {
   id?: number;
   tgGroupId: number;
   externalUserId: number;
-  externalUsername: string;
+  externalUsername: string | null;
   susCounter?: number;
   isWhitelisted?: boolean;
   isBlacklisted?: boolean;
@@ -49,7 +49,7 @@ export function TgGroupMemberFactory(
       },
       externalUsername: {
         type: DataTypes.STRING(50),
-        allowNull: false,
+        allowNull: true,
         field: "external_username",
       },
       susCounter: {
@@ -72,8 +72,8 @@ export function TgGroupMemberFactory(
       },
     },
     {
-      createdAt: true,
-      updatedAt: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
       freezeTableName: true,
     }
   );

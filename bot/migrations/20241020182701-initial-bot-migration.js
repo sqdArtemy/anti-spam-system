@@ -47,7 +47,7 @@ module.exports = {
       muteEnabled: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: true,
+        defaultValue: false,
         field: "mute_enabled",
       },
       banThreshold: {
@@ -76,11 +76,13 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        field: "created_at",
       },
       updatedAt: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        field: "updated_at",
       },
     });
 
@@ -111,7 +113,7 @@ module.exports = {
       },
       externalUsername: {
         type: Sequelize.STRING(50),
-        allowNull: false,
+        allowNull: true,
         field: "external_username",
       },
       susCounter: {
@@ -136,11 +138,13 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        field: "created_at",
       },
       updatedAt: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        field: "updated_at",
       },
     });
 
