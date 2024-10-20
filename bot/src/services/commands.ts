@@ -1,4 +1,4 @@
-import { Context } from "grammy";
+import { Context, InlineKeyboard } from "grammy";
 import { TgGroupRepository } from "../repositories/tgGroup.repository";
 import { TgGroupMemberRepository } from "../repositories/tgGroupMember.repository";
 
@@ -28,4 +28,21 @@ export const stopService = async (ctx: Context) => {
     await tgGroupRepo.updateGroupParams(groupId, { botEnabled: false });
   }
   await ctx.reply(`Bot is disabled for this group`);
+};
+
+export const settingsService = async (ctx: Context) => {
+  const keyboard = new InlineKeyboard()
+    .row(
+      { text: "Model Confidence settings", callback_data: "confidence_config" },
+      { text: "Whitelist settings", callback_data: "whitelist_config" }
+    )
+    .row(
+      { text: "Ban/Mute settings", callback_data: "action_config" },
+      { text: "User settings", callback_data: "users_config" }
+    )
+    .row({ text: "Exit", callback_data: "exit_config" });
+
+  await ctx.reply("Please choose an option:", {
+    reply_markup: keyboard,
+  });
 };
