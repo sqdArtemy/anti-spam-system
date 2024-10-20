@@ -1,8 +1,9 @@
-import { Bot } from "grammy";
+import { Bot, BotError, Context } from "grammy";
 import dotenv from "dotenv";
 import { logger } from "./logger/logger";
 import { databaseConfig } from "./models/config";
-import { startService, stopService } from "./services/start.service";
+import { commands, stopService } from "./services/commands";
+import { errorHandler } from "./middleware/errorHandler";
 
 dotenv.config({ path: "./.env" });
 
@@ -24,6 +25,10 @@ process.on("unhandledRejection", (err: Error): void => {
 });
 
 // bot.on("message", (ctx) => ctx.reply("Hi there!"));
-bot.command("start", startService);
+bot.command("start", commands);
 bot.command("stop", stopService);
+bot.catch(async (err: BotError<Context>) => {
+  await errorHandler(err);
+});
+
 bot.start();
