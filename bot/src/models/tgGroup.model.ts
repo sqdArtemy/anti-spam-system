@@ -16,13 +16,9 @@ export interface TgGroupAttrs {
   members?: TgGroupMemberModel[];
 }
 
-interface TgGroupCreationAttributes extends Optional<TgGroupAttrs, "id"> {}
-
 export interface TgGroupModel
-  extends Model<TgGroupAttrs, TgGroupCreationAttributes>,
+  extends Model<TgGroupAttrs, TgGroupAttrs>,
     TgGroupAttrs {}
-
-export class TgGroup extends Model<TgGroupModel, TgGroupAttrs> {}
 
 export type TgGroupStatic = typeof Model & {
   new (value?: object, options?: BuildOptions): TgGroupModel;
@@ -70,7 +66,7 @@ export function TgGroupFactory(sequelize: Sequelize): TgGroupStatic {
       muteThreshold: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        field: "ban_threshold",
+        field: "mute_threshold",
       },
       susMinConfidence: {
         type: DataTypes.DECIMAL,

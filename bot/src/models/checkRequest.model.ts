@@ -20,8 +20,6 @@ export interface CheckRequestModel
   extends Model<CheckRequestAttrs>,
     CheckRequestAttrs {}
 
-export class CheckRequest extends Model<CheckRequestModel, CheckRequestAttrs> {}
-
 export type CheckRequestStatic = typeof Model & {
   new (value?: object, options?: BuildOptions): CheckRequestModel;
 };

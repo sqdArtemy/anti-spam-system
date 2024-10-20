@@ -20,7 +20,7 @@ export interface ITgGroupMemberRepository {
   getAllNonWhitelisted(tgGroupId: number): Promise<TgGroupMemberModel[]>;
   updateMember(
     id: number,
-    params: UpdateOptions<TgGroupMemberAttrs>
+    params: TgGroupMemberAttrs
   ): Promise<TgGroupMemberModel | null>;
   getAllByFilters(
     filters: WhereOptions<TgGroupMemberAttrs>

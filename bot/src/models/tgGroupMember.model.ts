@@ -6,7 +6,7 @@ export interface TgGroupMemberAttrs {
   id?: number;
   tgGroupId: number;
   externalUserId: number;
-  externalUsername: number;
+  externalUsername: string;
   susCounter?: number;
   isWhitelisted?: boolean;
   isBlacklisted?: boolean;
@@ -20,13 +20,8 @@ export interface TgGroupMemberModel
   extends Model<TgGroupMemberAttrs>,
     TgGroupMemberAttrs {}
 
-export class TgGroupMember extends Model<
-  TgGroupMemberModel,
-  TgGroupMemberAttrs
-> {}
-
 export type TgGroupMemberStatic = typeof Model & {
-  new (value?: object, options?: BuildOptions): TgGroupMemberModel;
+  new (values?: object, options?: BuildOptions): TgGroupMemberModel;
 };
 
 export function TgGroupMemberFactory(

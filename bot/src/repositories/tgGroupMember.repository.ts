@@ -1,9 +1,9 @@
-import { ITgGroupMemberRepository } from "../interfaces/repositories/tgGroupMemberRepository.interface";
+import { ITgGroupMemberRepository } from "../interfaces/repositories/tgGroupMember.interface";
 import {
   TgGroupMemberAttrs,
   TgGroupMemberModel,
 } from "../models/tgGroupMember.model";
-import { UpdateOptions, WhereOptions } from "sequelize";
+import { WhereOptions } from "sequelize";
 import { TgGroupMember } from "../models";
 
 export class TgGroupMemberRepository implements ITgGroupMemberRepository {
@@ -79,7 +79,7 @@ export class TgGroupMemberRepository implements ITgGroupMemberRepository {
 
   public async updateMember(
     id: number,
-    params: UpdateOptions<TgGroupMemberAttrs>
+    params: TgGroupMemberAttrs
   ): Promise<TgGroupMemberModel | null> {
     await TgGroupMember.update(params, {
       where: { id },
