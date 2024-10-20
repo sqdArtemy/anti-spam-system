@@ -4,11 +4,26 @@ import { logger } from "./logger/logger";
 import { databaseConfig } from "./models/config";
 import { commands, stopService } from "./services/commands";
 import { errorHandler } from "./middleware/errorHandler";
+import { validateAdmin } from "./middleware/validators";
 
 dotenv.config({ path: "./.env" });
 
 export const bot = new Bot(process.env.TG_BOT_TOKEN!);
 logger.bot.info("Bot is running");
+
+process.on("unhandledRejection", (err: Error): void => {
+  logger.system.error("Unhandled Rejection", err);
+});
+
+// bot.on("message", (ctx) => ctx.reply("Hi there!"));
+
+bot.command("start", validateAdmin, commands);
+bot.command("stop", validateAdmin, stopService);
+bot.catch(async (err: BotError<Context>) => {
+  await errorHandler(err);
+});
+
+bot.start();
 
 databaseConfig
   .authenticate()
@@ -19,16 +34,3 @@ databaseConfig
     logger.system.error(err);
     throw Error;
   });
-
-process.on("unhandledRejection", (err: Error): void => {
-  logger.system.error("Unhandled Rejection", err);
-});
-
-// bot.on("message", (ctx) => ctx.reply("Hi there!"));
-bot.command("start", commands);
-bot.command("stop", stopService);
-bot.catch(async (err: BotError<Context>) => {
-  await errorHandler(err);
-});
-
-bot.start();

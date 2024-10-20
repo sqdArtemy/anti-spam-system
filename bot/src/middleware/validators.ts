@@ -1,12 +1,20 @@
-import { Context } from "grammy";
+import { Context, NextFunction } from "grammy";
+import { BadRequestError } from "./badRequestError";
 
-export const isGroupChat = async (ctx: Context): Promise<boolean> => {
+export async function validateAdmin(
+  ctx: Context,
+  next: NextFunction
+): Promise<void> {
   const isValid = ctx.chat?.type === "group" || ctx.chat?.type === "supergroup";
   if (!isValid) {
-    await ctx.reply("This command can only be used in a group.");
+    throw new BadRequestError("This command can only be used in a group.");
   }
-  return isValid;
-};
+
+  const userId = ctx.from?.id!;
+  if (await isAdmin(ctx, userId)) {
+    await next();
+  }
+}
 
 export const isAdmin = async (
   ctx: Context,
