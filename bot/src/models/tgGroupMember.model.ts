@@ -2,7 +2,7 @@ import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
 import { CheckRequestModel } from "./checkRequest.model";
 import { TgGroupModel } from "./tgGroup.model";
 
-export interface TgGroupMemberAttributes {
+export interface TgGroupMemberAttrs {
   id?: number;
   tgGroupId: number;
   externalUserId: number;
@@ -17,12 +17,12 @@ export interface TgGroupMemberAttributes {
 }
 
 export interface TgGroupMemberModel
-  extends Model<TgGroupMemberAttributes>,
-    TgGroupMemberAttributes {}
+  extends Model<TgGroupMemberAttrs>,
+    TgGroupMemberAttrs {}
 
 export class TgGroupMember extends Model<
   TgGroupMemberModel,
-  TgGroupMemberAttributes
+  TgGroupMemberAttrs
 > {}
 
 export type TgGroupMemberStatic = typeof Model & {

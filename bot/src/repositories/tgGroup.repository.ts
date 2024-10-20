@@ -1,5 +1,5 @@
 import { ITgGroupRepository } from "../interfaces/repositories/tgGroupRepository.interface";
-import { TgGroupAttributes, TgGroupModel } from "../models/tgGroup.model";
+import { TgGroupAttrs, TgGroupModel } from "../models/tgGroup.model";
 import { UpdateOptions } from "sequelize";
 import { TgGroup } from "../models";
 
@@ -37,9 +37,12 @@ export class TgGroupRepository implements ITgGroupRepository {
 
   public async updateGroupParams(
     externalGroupId: number,
-    params: UpdateOptions<TgGroupAttributes>
+    params: UpdateOptions<TgGroupAttrs>
   ): Promise<TgGroupModel | null> {
-    await TgGroup.update(params, { where: { externalGroupId } });
+    await TgGroup.update(params, {
+      where: { externalGroupId },
+    });
+
     return await this.getByExternalGroupId(externalGroupId);
   }
 }

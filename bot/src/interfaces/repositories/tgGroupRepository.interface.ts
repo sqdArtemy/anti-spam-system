@@ -1,4 +1,4 @@
-import { TgGroupAttributes, TgGroupModel } from "../../models/tgGroup.model";
+import { TgGroupAttrs, TgGroupModel } from "../../models/tgGroup.model";
 import { UpdateOptions } from "sequelize";
 
 export interface ITgGroupRepository {
@@ -7,6 +7,6 @@ export interface ITgGroupRepository {
   getByExternalGroupId(externalGroupId: number): Promise<TgGroupModel | null>;
   updateGroupParams(
     externalGroupId: number,
-    params: UpdateOptions<TgGroupAttributes>
+    params: UpdateOptions<TgGroupAttrs>
   ): Promise<TgGroupModel | null>;
 }

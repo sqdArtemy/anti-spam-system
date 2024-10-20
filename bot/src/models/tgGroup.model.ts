@@ -1,7 +1,7 @@
 import { BuildOptions, DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { TgGroupMemberModel } from "./tgGroupMember.model";
 
-export interface TgGroupAttributes {
+export interface TgGroupAttrs {
   id?: number;
   externalGroupId: number;
   botEnabled?: boolean;
@@ -16,13 +16,13 @@ export interface TgGroupAttributes {
   members?: TgGroupMemberModel[];
 }
 
-interface TgGroupCreationAttributes extends Optional<TgGroupAttributes, "id"> {}
+interface TgGroupCreationAttributes extends Optional<TgGroupAttrs, "id"> {}
 
 export interface TgGroupModel
-  extends Model<TgGroupAttributes, TgGroupCreationAttributes>,
-    TgGroupAttributes {}
+  extends Model<TgGroupAttrs, TgGroupCreationAttributes>,
+    TgGroupAttrs {}
 
-export class TgGroup extends Model<TgGroupModel, TgGroupAttributes> {}
+export class TgGroup extends Model<TgGroupModel, TgGroupAttrs> {}
 
 export type TgGroupStatic = typeof Model & {
   new (value?: object, options?: BuildOptions): TgGroupModel;

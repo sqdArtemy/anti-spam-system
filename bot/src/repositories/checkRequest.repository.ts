@@ -1,6 +1,6 @@
 import { ICheckRequestRepository } from "../interfaces/repositories/checkRequestRepository.interface";
 import {
-  CheckRequestAttributes,
+  CheckRequestAttrs,
   CheckRequestModel,
 } from "../models/checkRequest.model";
 import { CheckRequest } from "../models";
@@ -18,8 +18,8 @@ export class CheckRequestRepository implements ICheckRequestRepository {
   }
 
   public async addCheckRequest(
-    params: CheckRequestAttributes
+    params: CheckRequestAttrs
   ): Promise<CheckRequestModel> {
-    return await CheckRequest.create(params);
+    return await CheckRequest.create<CheckRequestModel>(params);
   }
 }

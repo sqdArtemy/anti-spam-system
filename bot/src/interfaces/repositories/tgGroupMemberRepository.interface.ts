@@ -1,6 +1,6 @@
 import {
+  TgGroupMemberAttrs,
   TgGroupMemberModel,
-  TgGroupMemberStatic,
 } from "../../models/tgGroupMember.model";
 import { UpdateOptions, WhereOptions } from "sequelize";
 
@@ -20,9 +20,9 @@ export interface ITgGroupMemberRepository {
   getAllNonWhitelisted(tgGroupId: number): Promise<TgGroupMemberModel[]>;
   updateMember(
     id: number,
-    params: UpdateOptions<TgGroupMemberStatic>
+    params: UpdateOptions<TgGroupMemberAttrs>
   ): Promise<TgGroupMemberModel | null>;
   getAllByFilters(
-    filters: WhereOptions<TgGroupMemberStatic>
+    filters: WhereOptions<TgGroupMemberAttrs>
   ): Promise<TgGroupMemberModel[]>;
 }

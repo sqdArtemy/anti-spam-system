@@ -4,9 +4,9 @@ import { TgGroupFactory } from "./tgGroup.model";
 import { TgGroupMemberFactory } from "./tgGroupMember.model";
 import { CheckRequestFactory } from "./checkRequest.model";
 
-export const TgGroup = TgGroupFactory(databaseConfig);
-export const TgGroupMember = TgGroupMemberFactory(databaseConfig);
-export const CheckRequest = CheckRequestFactory(databaseConfig);
+const TgGroup = TgGroupFactory(databaseConfig);
+const TgGroupMember = TgGroupMemberFactory(databaseConfig);
+const CheckRequest = CheckRequestFactory(databaseConfig);
 
 TgGroup.sync();
 TgGroupMember.sync();
@@ -35,3 +35,5 @@ try {
 } catch (e) {
   console.log(e);
 }
+
+export { TgGroup, TgGroupMember, CheckRequest };

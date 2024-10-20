@@ -1,7 +1,7 @@
 import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
-import { TgGroupMember, TgGroupMemberModel } from "./tgGroupMember.model";
+import { TgGroupMemberModel } from "./tgGroupMember.model";
 
-export interface CheckRequestAttributes {
+export interface CheckRequestAttrs {
   id?: number;
   input: string;
   output: string;
@@ -17,13 +17,10 @@ export interface CheckRequestAttributes {
 }
 
 export interface CheckRequestModel
-  extends Model<CheckRequestAttributes>,
-    CheckRequestAttributes {}
+  extends Model<CheckRequestAttrs>,
+    CheckRequestAttrs {}
 
-export class CheckRequest extends Model<
-  CheckRequestModel,
-  CheckRequestAttributes
-> {}
+export class CheckRequest extends Model<CheckRequestModel, CheckRequestAttrs> {}
 
 export type CheckRequestStatic = typeof Model & {
   new (value?: object, options?: BuildOptions): CheckRequestModel;

@@ -1,8 +1,8 @@
 import {
-  CheckRequestAttributes,
+  CheckRequestAttrs,
   CheckRequestModel,
 } from "../../models/checkRequest.model";
 
 export interface ICheckRequestRepository {
-  addCheckRequest(params: CheckRequestAttributes): Promise<CheckRequestModel>;
+  addCheckRequest(params: CheckRequestAttrs): Promise<CheckRequestModel>;
 }
