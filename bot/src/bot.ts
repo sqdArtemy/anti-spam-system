@@ -2,7 +2,7 @@ import { Bot, BotError, Context } from "grammy";
 import dotenv from "dotenv";
 import { logger } from "./logger/logger";
 import { databaseConfig } from "./models/config";
-import { commands, settingsService, stopService } from "./services/commands";
+import { CommandService } from "./services/command.service";
 import { errorHandler } from "./middleware/errorHandler";
 import { validateAdmin } from "./middleware/validators";
 
@@ -17,9 +17,13 @@ process.on("unhandledRejection", (err: Error): void => {
 
 // bot.on("message", (ctx) => ctx.reply("Hi there!"));
 
-bot.command("start", validateAdmin, commands);
-bot.command("stop", validateAdmin, stopService);
-bot.command("settings", validateAdmin, settingsService);
+const commandService = new CommandService();
+bot.command("start", validateAdmin, commandService.startCommand);
+bot.command("stop", validateAdmin, commandService.stopCommand);
+bot.command("settings", validateAdmin, commandService.settingsCommand);
+bot.command("stats", validateAdmin, commandService.statsCommand);
+bot.command("help", validateAdmin, commandService.helpCommand);
+bot.command("report", commandService.reportCommand);
 
 bot.callbackQuery("exit_config", async (ctx) => {
   await ctx.deleteMessage();
