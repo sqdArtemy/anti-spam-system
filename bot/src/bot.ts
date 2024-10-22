@@ -5,7 +5,7 @@ import { databaseConfig } from "./models/config";
 import { CommandService } from "./services/command.service";
 import { errorHandler } from "./middleware/errorHandler";
 import { validateAdmin } from "./middleware/validators";
-import { CallbackService } from "./services/callbacks";
+import { CallbackService } from "./services/callbacks.service";
 
 dotenv.config({ path: "./.env" });
 
@@ -30,7 +30,6 @@ bot.command("report", commandService.reportCommand);
 
 const callbackService = new CallbackService();
 bot.callbackQuery("exit_config", callbackService.exitFromMenu);
-bot.callbackQuery("go_to_settings", callbackService.goToSettingsMenu);
 bot.callbackQuery("action_config", callbackService.banAndMuteConfig);
 bot.callbackQuery("ban_config", callbackService.banConfig);
 bot.callbackQuery("ban_enable_config", callbackService.banEnableConfig);
@@ -38,6 +37,10 @@ bot.callbackQuery("ban_threshold_config", callbackService.banThresholdConfig);
 bot.callbackQuery("mute_config", callbackService.muteConfig);
 bot.callbackQuery("mute_enable_config", callbackService.muteEnableConfig);
 bot.callbackQuery("mute_threshold_config", callbackService.muteThresholdConfig);
+
+bot.callbackQuery("confidence_config", callbackService.confidenceConfig);
+bot.callbackQuery("sus_confidence", callbackService.updateSusThreshold);
+bot.callbackQuery("spam_confidence", callbackService.updateSpamThreshold);
 
 bot.on("message:text", async (ctx) => {
   await callbackService.handleInput(ctx);
