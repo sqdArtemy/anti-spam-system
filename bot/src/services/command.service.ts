@@ -1,4 +1,4 @@
-import { Context, InlineKeyboard } from "grammy";
+import { Bot, Context, InlineKeyboard } from "grammy";
 import { TgGroupRepository } from "../repositories/tgGroup.repository";
 import { TgGroupMemberRepository } from "../repositories/tgGroupMember.repository";
 import { ITgGroupRepository } from "../interfaces/repositories/tgGroup.interface";
@@ -77,4 +77,20 @@ export class CommandService implements ICommandService {
   helpCommand = async (ctx: Context) => {};
 
   reportCommand = async (ctx: Context) => {};
+
+  setAllCommands = async (bot: Bot) => {
+    const commands = [
+      { command: "start", description: "Enable the bot for the group" },
+      { command: "stop", description: "Disable the bot for the group" },
+      { command: "help", description: "Get help" },
+      { command: "settings", description: "Configuration for the bot" },
+      { command: "report", description: "Report spam message" },
+      {
+        command: "stats",
+        description: "Get stats about spam detection in the group",
+      },
+    ];
+
+    await bot.api.setMyCommands(commands);
+  };
 }
