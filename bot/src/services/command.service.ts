@@ -79,7 +79,39 @@ export class CommandService implements ICommandService {
     });
   };
 
-  helpCommand = async (ctx: Context) => {};
+  helpCommand = async (ctx: Context) => {
+    const helpMessage = `
+      <b>Bot Commands Guide</b>
+      Welcome! Here’s an overview of what each command does:
+      
+      <b>/start</b> - <i>Enable the bot in this group.</i>
+      Use this command to activate the bot's functionalities for your group. Once enabled, the bot will start monitoring and protecting the group according to its settings.
+      
+      <b>/stop</b> - <i>Disable the bot in this group.</i>
+      This command deactivates the bot for the group, pausing all automated actions and settings temporarily. Use this if you want to stop the bot from operating without removing it from the group.
+      
+      <b>/help</b> - <i>Access a detailed guide of commands and bot features.</i>
+      Displays this help message with details on each command. Use this to better understand what each command does.
+      
+      <b>/settings</b> - <i>Adjust bot configurations.</i>
+      With this command, you can customize the bot’s settings, such as spam sensitivity, actions on detection, and other group-specific configurations.
+      
+      <b>/report</b> - <i>Report a message as spam.</i>
+      If you see a spam or inappropriate message, use this command to alert the bot, which will evaluate the message and take appropriate action.
+      
+      <b>/stats</b> - <i>View spam detection statistics.</i>
+      Get insights into the bot’s spam detection performance in the group. See stats like the number of messages flagged, spam messages handled, and more.
+      
+      <i>For more detailed information, please refer to the Telegraph page linked below.</i>
+    `;
+
+    const telegraphLink = "https://telegra.ph/Bot-Commands-Guide-11-11-3";
+
+    await ctx.reply(helpMessage + `<a href="${telegraphLink}">Detailed Guide on Telegraph</a>`, {
+      parse_mode: 'HTML',
+    });
+
+  };
 
   reportCommand = async (ctx: Context) => {};
 
