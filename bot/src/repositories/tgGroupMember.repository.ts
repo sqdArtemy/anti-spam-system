@@ -1,4 +1,4 @@
-import { ITgGroupMemberRepository } from "../interfaces/repositories/tgGroupMember.interface";
+import {ITgGroupMemberRepository, IUpdateMember} from "../interfaces/repositories/tgGroupMember.interface";
 import {
   TgGroupMemberAttrs,
   TgGroupMemberModel,
@@ -70,6 +70,7 @@ export class TgGroupMemberRepository implements ITgGroupMemberRepository {
         tgGroupId,
         externalUserId: externalId,
       },
+      logging: console.log
     });
   }
 
@@ -79,7 +80,7 @@ export class TgGroupMemberRepository implements ITgGroupMemberRepository {
 
   public async updateMember(
     id: number,
-    params: TgGroupMemberAttrs
+    params: IUpdateMember
   ): Promise<TgGroupMemberModel | null> {
     await TgGroupMember.update(params, {
       where: { id },

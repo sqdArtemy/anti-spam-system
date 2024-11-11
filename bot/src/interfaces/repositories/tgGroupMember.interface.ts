@@ -20,9 +20,13 @@ export interface ITgGroupMemberRepository {
   getAllNonWhitelisted(tgGroupId: number): Promise<TgGroupMemberModel[]>;
   updateMember(
     id: number,
-    params: TgGroupMemberAttrs
+    params: IUpdateMember
   ): Promise<TgGroupMemberModel | null>;
   getAllByFilters(
     filters: WhereOptions<TgGroupMemberAttrs>
   ): Promise<TgGroupMemberModel[]>;
+}
+
+export interface IUpdateMember {
+  isWhitelisted?: boolean
 }

@@ -30,6 +30,10 @@ bot.command("report", commandService.reportCommand);
 
 const callbackService = new CallbackService();
 bot.callbackQuery("exit_config", callbackService.exitFromMenu);
+bot.callbackQuery("whitelist_config", callbackService.whitelistConfig);
+bot.callbackQuery("whitelist_add", callbackService.whitelistAddConfig);
+bot.callbackQuery(/whitelist_add_(\d+)/, callbackService.onWhitelistAdd);
+
 bot.callbackQuery("action_config", callbackService.banAndMuteConfig);
 bot.callbackQuery("ban_config", callbackService.banConfig);
 bot.callbackQuery("ban_enable_config", callbackService.banEnableConfig);
