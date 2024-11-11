@@ -70,6 +70,11 @@ export function TgGroupMemberFactory(
         defaultValue: false,
         field: "is_whitelisted",
       },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        field: "created_at"
+      }
     },
     {
       createdAt: "created_at",

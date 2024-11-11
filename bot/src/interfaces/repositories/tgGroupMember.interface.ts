@@ -28,5 +28,6 @@ export interface ITgGroupMemberRepository {
 }
 
 export interface IUpdateMember {
-  isWhitelisted?: boolean
+  isWhitelisted?: boolean;
+  susCounter?: number;
 }

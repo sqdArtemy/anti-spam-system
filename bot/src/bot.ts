@@ -30,6 +30,11 @@ bot.command("report", commandService.reportCommand);
 
 const callbackService = new CallbackService();
 bot.callbackQuery("exit_config", callbackService.exitFromMenu);
+
+bot.callbackQuery("users_config", callbackService.usersConfig);
+bot.callbackQuery("reset_sus_counter", callbackService.resetSusCounterConfig);
+bot.callbackQuery(/reset_sus_(\d+)/, callbackService.resetSusCounter);
+
 bot.callbackQuery("whitelist_config", callbackService.whitelistConfig);
 bot.callbackQuery("whitelist_add", callbackService.whitelistAddConfig);
 bot.callbackQuery(/whitelist_add_(\d+)/, callbackService.onWhitelistAdd);
