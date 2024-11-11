@@ -22,6 +22,11 @@ export class CommandService implements ICommandService {
     if (!group) {
       group = await this.tgGroupRepo.addGroup(groupId);
       await this.tgMemberRepo.addMember(group.id!, userId, username);
+
+      const botInfo = await ctx.api.getMe();
+      const botId = botInfo.id;
+      const botUsername = botInfo.username;
+      await this.tgMemberRepo.addMember(group.id!, botId, botUsername);
     }
 
     await this.tgGroupRepo.updateGroupParams(groupId, { botEnabled: true });
