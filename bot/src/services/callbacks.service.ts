@@ -361,5 +361,43 @@ export class CallbackService {
       return await this.whitelistConfig(ctx);
     }
   };
+
+  whitelistRemoveConfig = async (ctx: Context) => {
+
+    const groupId = ctx.chat?.id!;
+    const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
+
+    const whitelistedMembers = await this.tgMemberRepo.getAllWhitelisted(group?.id!);
+
+    if (whitelistedMembers.length === 0) {
+      return await ctx.reply("No members are currently whitelisted.");
+    }
+
+    const keyboard = new InlineKeyboard();
+    whitelistedMembers.forEach(member => {
+      keyboard.row({
+        text: member.externalUsername || String(member.externalUserId),
+        callback_data: `whitelist_remove_${member.id}`
+      });
+    });
+    keyboard.row({ text: "Exit", callback_data: "exit_config" });
+
+    await ctx.reply("Select a member to remove from the whitelist:", {
+      reply_markup: keyboard,
+    });
+  };
+
+  onWhitelistRemove = async (ctx: Context) => {
+    if (ctx.match && ctx.match[1]) {
+      const memberId = parseInt(ctx.match[1], 10);
+
+      await this.tgMemberRepo.updateMember(memberId, {
+        isWhitelisted: false
+      });
+
+      await ctx.reply("Member has been removed from the whitelist.");
+      return await this.whitelistConfig(ctx);
+    }
+  };
 }
 

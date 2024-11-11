@@ -33,6 +33,8 @@ bot.callbackQuery("exit_config", callbackService.exitFromMenu);
 bot.callbackQuery("whitelist_config", callbackService.whitelistConfig);
 bot.callbackQuery("whitelist_add", callbackService.whitelistAddConfig);
 bot.callbackQuery(/whitelist_add_(\d+)/, callbackService.onWhitelistAdd);
+bot.callbackQuery("whitelist_remove", callbackService.whitelistRemoveConfig);
+bot.callbackQuery(/whitelist_remove_(\d+)/, callbackService.onWhitelistRemove);
 
 bot.callbackQuery("action_config", callbackService.banAndMuteConfig);
 bot.callbackQuery("ban_config", callbackService.banConfig);
