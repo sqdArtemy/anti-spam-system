@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+
+core/train_data.pkl
+core/model.ipynb
+data
+client.py
+venv

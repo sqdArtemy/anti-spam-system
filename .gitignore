@@ -162,9 +162,4 @@ cython_debug/
 model/data/downloads
 model/data/csvs
 model/data/data.csv
-
-model/core/vocab.pkl
 model/core/train_data.pkl
-model/core/model.pkl
-
-backend/alembic.ini
