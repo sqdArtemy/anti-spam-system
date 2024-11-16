@@ -173,7 +173,7 @@ export class CallbackService {
 
       this.userStates.delete(ctx.chat?.id!);
     } else {
-      if(!group?.botEnabled) return;
+      if (!group?.botEnabled) return;
 
       const memberId = ctx.from?.id!;
       const member = await this.tgMemberRepo.getByGroupIdAndUserId(
@@ -183,10 +183,7 @@ export class CallbackService {
 
       const message = ctx.message?.text || "";
       if (message.length > 20 && message.split(" ").length >= 5) {
-        await this.spamCheckerService.checkSpam(
-          message,
-          member?.id!,
-        );
+        await this.spamCheckerService.checkSpam(ctx, message, member?.id!);
       }
     }
   };

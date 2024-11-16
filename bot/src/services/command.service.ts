@@ -50,11 +50,11 @@ export class CommandService implements ICommandService {
           text: "Model Confidence settings",
           callback_data: "confidence_config",
         },
-        { text: "Whitelist settings", callback_data: "whitelist_config" }
+        { text: "Whitelist settings", callback_data: "whitelist_config" },
       )
       .row(
         { text: "Ban/Mute settings", callback_data: "action_config" },
-        { text: "User settings", callback_data: "users_config" }
+        { text: "User settings", callback_data: "users_config" },
       )
       .row({ text: "Exit", callback_data: "exit_config" });
 
@@ -67,11 +67,11 @@ export class CommandService implements ICommandService {
     const keyboard = new InlineKeyboard()
       .row(
         { text: "Stats by users", callback_data: "user_stats" },
-        { text: "Stats by words", callback_data: "word_stats" }
+        { text: "Stats by words", callback_data: "word_stats" },
       )
       .row(
         { text: "Stats by urls", callback_data: "url_stats" },
-        { text: "Exit", callback_data: "exits_config" }
+        { text: "Exit", callback_data: "exits_config" },
       );
 
     await ctx.reply("Please choose an option:", {
@@ -107,10 +107,13 @@ export class CommandService implements ICommandService {
 
     const telegraphLink = "https://telegra.ph/Bot-Commands-Guide-11-11-3";
 
-    await ctx.reply(helpMessage + `<a href="${telegraphLink}">Detailed Guide on Telegraph</a>`, {
-      parse_mode: 'HTML',
-    });
-
+    await ctx.reply(
+      helpMessage +
+        `<a href="${telegraphLink}">Detailed Guide on Telegraph</a>`,
+      {
+        parse_mode: "HTML",
+      },
+    );
   };
 
   reportCommand = async (ctx: Context) => {};

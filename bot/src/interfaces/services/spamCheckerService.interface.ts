@@ -1,5 +1,5 @@
-import { CheckRequestModel } from "../../models/checkRequest.model";
+import { Context } from "grammy";
 
 export interface ISpamCheckerService {
-    checkSpam(text: string, tgMemberId: number): Promise<CheckRequestModel>
+    checkSpam(ctx: Context, text: string, tgMemberId: number): Promise<void>
 }
