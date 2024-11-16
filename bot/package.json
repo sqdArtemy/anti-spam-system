@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@temporalio/client": "^1.11.3",
     "@types/node-telegram-bot-api": "^0.64.7",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
