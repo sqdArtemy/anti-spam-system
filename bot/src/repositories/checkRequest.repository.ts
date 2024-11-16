@@ -1,4 +1,4 @@
-import { ICheckRequestRepository } from "../interfaces/repositories/checkRequestRepository.interface";
+import { ICheckRequestRepository } from "../interfaces/repositories/checkRequest.interface";
 import {
   CheckRequestAttrs,
   CheckRequestModel,
