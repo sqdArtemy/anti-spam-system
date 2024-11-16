@@ -70,7 +70,6 @@ export class TgGroupMemberRepository implements ITgGroupMemberRepository {
         tgGroupId,
         externalUserId: externalId,
       },
-      logging: console.log
     });
   }
 

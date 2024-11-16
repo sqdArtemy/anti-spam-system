@@ -5,7 +5,9 @@ import { TgGroupRepository } from "../repositories/tgGroup.repository";
 import { CommandService } from "./command.service";
 import { ICommandService } from "../interfaces/services/commandService.interface";
 import { TgGroupModel } from "../models/tgGroup.model";
-import {Op} from "sequelize";
+import { Op } from "sequelize";
+import { ISpamCheckerService } from "../interfaces/services/spamCheckerService.interface";
+import { SpamCheckerService } from "./spamChecker.service";
 
 type UserState =
   | "ban_threshold"
@@ -18,12 +20,14 @@ export class CallbackService {
   tgMemberRepo: TgGroupMemberRepository;
   userStates: Map<number, UserState>;
   commandsService: ICommandService;
+  spamCheckerService: ISpamCheckerService;
 
   public constructor() {
     this.tgGroupRepo = TgGroupRepository.getTgGroupRepository();
     this.tgMemberRepo = TgGroupMemberRepository.getTgGroupRepository();
     this.userStates = new Map();
     this.commandsService = new CommandService();
+    this.spamCheckerService = new SpamCheckerService();
   }
 
   exitFromMenu = async (ctx: Context) => {
@@ -148,11 +152,10 @@ export class CallbackService {
 
   handleInput = async (ctx: Context) => {
     const userState = this.userStates.get(ctx.chat?.id!);
+    const groupId = ctx.chat?.id!;
+    const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
     if (userState) {
       const input = parseInt(ctx.message?.text || "", 10);
-      const groupId = ctx.chat?.id!;
-      const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-
       switch (userState) {
         case "ban_threshold":
           await this.handleBanThreshold(ctx, input, groupId);
@@ -169,6 +172,22 @@ export class CallbackService {
       }
 
       this.userStates.delete(ctx.chat?.id!);
+    } else {
+      if(!group?.botEnabled) return;
+
+      const memberId = ctx.from?.id!;
+      const member = await this.tgMemberRepo.getByGroupIdAndUserId(
+        group?.id!,
+        memberId,
+      );
+
+      const message = ctx.message?.text || "";
+      if (message.length > 20 && message.split(" ").length >= 5) {
+        await this.spamCheckerService.checkSpam(
+          message,
+          member?.id!,
+        );
+      }
     }
   };
 
@@ -454,7 +473,7 @@ export class CallbackService {
     const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
     const members = await this.tgMemberRepo.getAllByFilters({
       tgGroupId: group?.id,
-      susCounter: {[Op.gt]: 0 }
+      susCounter: { [Op.gt]: 0 },
     });
 
     if (members.length === 0) {
