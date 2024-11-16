@@ -28,7 +28,7 @@ export class SpamCheckerService implements ISpamCheckerService {
     const result = await this.sendRequestToAI(text);
     const spamResponse: IAiModelResponse = JSON.parse(result);
 
-    await this.checkRequestRepo.addCheckRequest({
+    const checkRequest = await this.checkRequestRepo.addCheckRequest({
       tgGroupMemberId: tgMemberId,
       input: text,
       isSus: Boolean(spamResponse.is_suspicious),
@@ -39,7 +39,7 @@ export class SpamCheckerService implements ISpamCheckerService {
     });
 
     if (spamResponse.is_suspicious) {
-      await this.handleSuspiciousSpam(ctx, tgMemberId);
+      await this.handleSuspiciousSpam(ctx, tgMemberId, checkRequest);
     }
   }
 
@@ -60,20 +60,40 @@ export class SpamCheckerService implements ISpamCheckerService {
     return await handle.result();
   }
 
-  private async handleSuspiciousSpam(ctx: Context, tgMemberId: number) {
+  private async handleSuspiciousSpam(
+    ctx: Context,
+    tgMemberId: number,
+    checkRequest: CheckRequestModel,
+  ) {
     const member = await this.tgMemberRepo.getById(tgMemberId);
     const group = await this.tgGroupRepo.getById(member?.tgGroupId!);
 
-    const updatedSusCounter = Number(member?.susCounter) + 1;
-    await this.tgMemberRepo.updateMember(tgMemberId, {
-      susCounter: updatedSusCounter,
-    });
+    if (checkRequest.confidence >= group?.spamMinConfidence!) {
+      const updatedSusCounter = Number(member?.susCounter) + 1;
+      await this.tgMemberRepo.updateMember(tgMemberId, {
+        susCounter: updatedSusCounter,
+      });
 
-    if (group?.botEnabled && updatedSusCounter >= group?.banThreshold!) {
-    } else if (
-      group?.muteEnabled &&
-      updatedSusCounter >= group.muteThreshold!
-    ) {
+      if (group?.banEnabled && updatedSusCounter >= group?.banThreshold!) {
+        await ctx.banChatMember(member?.externalUserId!);
+      } else if (
+        group?.muteEnabled &&
+        updatedSusCounter >= group.muteThreshold!
+      ) {
+          const muteUntil = Math.floor(Date.now() / 1000) + 2 * 60;
+
+          await ctx.restrictChatMember(member?.externalUserId!, {
+              can_send_messages: false,
+              can_send_audios: false,
+              can_send_photos: false,
+              can_send_polls: false,
+              can_send_other_messages: false,
+              can_add_web_page_previews: false,
+              can_change_info: false,
+              can_invite_users: false,
+              can_pin_messages: false,
+          }, { until_date: muteUntil });
+      }
     }
   }
 }

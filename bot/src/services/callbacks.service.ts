@@ -109,7 +109,7 @@ export class CallbackService {
       { text: "Exit", callback_data: "exit_config" },
     ];
 
-    if (group?.banEnabled) {
+    if (group?.muteEnabled) {
       buttons.unshift({
         text: "Change mute settings",
         callback_data: "mute_threshold_config",
@@ -153,7 +153,16 @@ export class CallbackService {
   handleInput = async (ctx: Context) => {
     const userState = this.userStates.get(ctx.chat?.id!);
     const groupId = ctx.chat?.id!;
+    const memberId = ctx.from?.id!;
+
     const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
+
+    let member = await this.tgMemberRepo.getByGroupIdAndUserId(group?.id!, memberId);
+    if(!member){
+      const username = ctx.from?.username!;
+      await this.tgMemberRepo.addMember(group?.id!, memberId, username);
+    }
+
     if (userState) {
       const input = parseInt(ctx.message?.text || "", 10);
       switch (userState) {

@@ -73,7 +73,8 @@ export function TgGroupMemberFactory(
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        field: "created_at"
+        field: "created_at",
+        defaultValue: DataTypes.NOW
       }
     },
     {
