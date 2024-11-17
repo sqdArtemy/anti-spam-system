@@ -8,31 +8,69 @@ import { TgGroupRepository } from "../repositories/tgGroup.repository";
 import { TgGroupMemberRepository } from "../repositories/tgGroupMember.repository";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 import { GroupedCountResultItem } from "sequelize";
+import { ICommandService } from "../interfaces/services/commandService.interface";
+import { CommandService } from "./command.service";
 
 export class StatsService implements IStatsService {
   checkRequestRepo: ICheckRequestRepository;
   tgGroupRepo: ITgGroupRepository;
   tgMemberRepo: ITgGroupMemberRepository;
+  commandsService: ICommandService;
 
   constructor() {
     this.checkRequestRepo = CheckRequestRepository.getCheckRequestRepository();
     this.tgGroupRepo = TgGroupRepository.getTgGroupRepository();
     this.tgMemberRepo = TgGroupMemberRepository.getTgGroupRepository();
+    this.commandsService = new CommandService();
   }
 
-  public getUrlStats = async (ctx: Context): Promise<unknown> => {
-    return Promise.resolve(undefined);
+  public getUrlStats = async (ctx: Context): Promise<void> => {
+    await ctx.deleteMessage();
+    const allMessages = await this.getAllSpamMessages(ctx);
+    const inputsOnly = allMessages.map(message => message.input);
+
+    let urlsCount = this.countUrls(inputsOnly);
+    urlsCount = urlsCount.sort((a, b) => b.count - a.count);
+
+    if(!urlsCount.length){
+      await ctx.reply("No urls have been found in spam");
+      return await this.commandsService.statsCommand(ctx);
+    }
+
+    const mainLabel = "Most used url as spam";
+    const rowLabel = "url";
+
+    const chartBuffer = await this.createBarChart(
+        urlsCount,
+        mainLabel,
+        rowLabel,
+    );
+
+    const total = urlsCount.reduce((count, url) => {
+      return count += url.count;
+    }, 0)
+
+    const average = total / allMessages.length;
+    await ctx.replyWithPhoto(new InputFile(chartBuffer, "url.png"), {
+      caption: `
+        Url stats:
+        - Total urls found: ${total}
+        - Average urls per spam message: ${average}
+        - Most commonly used url: ${ urlsCount.length ? urlsCount[0].url : 'None'}
+      `
+    });
+    return await this.commandsService.statsCommand(ctx);
   };
 
-  public getUserStats = async (ctx: Context): Promise<unknown> => {
-    let spammers = await this.getTopSpammers(ctx);
+  public getUserStats = async (ctx: Context): Promise<void> => {
+    await ctx.deleteMessage();
+    let { spammers, details } = await this.getTopSpammers(ctx);
     spammers = spammers.sort((a, b) => b.count - a.count);
 
-    let totalCount = spammers.reduce((count, spammer) => {
-      return (count += spammer.count);
-    }, 0);
-
-    let average = Math.round((totalCount / spammers.length) * 100) / 100;
+    if(!spammers.length){
+      await ctx.reply("No spammers have been found");
+      return await this.commandsService.statsCommand(ctx);
+    }
 
     const mainLabel = "Top spammers of the group";
     const rowLabel = "external_username";
@@ -46,8 +84,9 @@ export class StatsService implements IStatsService {
     await ctx.replyWithPhoto(new InputFile(chartBuffer, "chart.png"), {
       caption: `
       Top Spammers of the group.
-      - Total spam messages: ${totalCount}
-      - Average: ${average}
+      - Total spam messages: ${details.total}
+      - Average: ${details.average}
+      - Average confidence: ${details.averageConfidence}%
       - Top spammer: ${
         spammers.length > 0
           ? spammers[0]["external_username"] + " with " + spammers[0].count + " spam messages"
@@ -56,7 +95,7 @@ export class StatsService implements IStatsService {
       `,
     });
 
-    return Promise.resolve(undefined);
+    return await this.commandsService.statsCommand(ctx);
   };
 
   public getWordStats = async (ctx: Context): Promise<unknown> => {
@@ -74,7 +113,10 @@ export class StatsService implements IStatsService {
     const groupId = ctx.chat?.id;
     const group = await this.tgGroupRepo.getByExternalGroupId(groupId!);
 
-    return await this.checkRequestRepo.getTopSpammersByGroup(group?.id!);
+    const spammers = await this.checkRequestRepo.getTopSpammersByGroup(group?.id!);
+    const details = await this.checkRequestRepo.getDetailsAboutSpammers(group?.id!);
+
+    return { spammers, details };
   };
 
   async createBarChart(
@@ -120,5 +162,21 @@ export class StatsService implements IStatsService {
       colors.push(`hsl(${(i * 360) / count}, 70%, 50%)`); // HSL for diverse hues
     }
     return colors;
+  }
+
+  countUrls(strings: string[]): { url: string; count: number }[] {
+    const urlRegex = /\b(?:https?:\/\/|www\.)?[^\s/"'<>()]+(?:\.[^\s/"'<>()]+)+(?:\/[^\s"'<>()]*)?\b/g;
+    const urlCounts = new Map<string, number>();
+
+    strings.forEach(str => {
+      const matches = str.match(urlRegex);
+      if (matches) {
+        matches.forEach(url => {
+          urlCounts.set(url, (urlCounts.get(url) || 0) + 1);
+        });
+      }
+    });
+
+    return Array.from(urlCounts, ([url, count]) => ({ url, count }));
   }
 }
