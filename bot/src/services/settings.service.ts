@@ -120,7 +120,7 @@ export class SettingsService implements ISettingsService {
         memberId,
       );
 
-      if(member?.isWhitelisted) return;
+      if (member?.isWhitelisted) return;
 
       const message = ctx.message?.text || "";
       if (message.length > 20 && message.split(" ").length >= 5) {
