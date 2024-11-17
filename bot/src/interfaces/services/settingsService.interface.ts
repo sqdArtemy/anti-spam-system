@@ -14,11 +14,11 @@ export interface ISettingsService {
   updateSusThreshold(ctx: Context): Promise<void>;
   updateSpamThreshold(ctx: Context): Promise<void>;
   whitelistConfig(ctx: Context): Promise<void>;
-  whitelistAddConfig(ctx: Context): Promise<CommonMessage & MsgWith<"text">>;
+  whitelistAddConfig(ctx: Context): Promise<void>;
   onWhitelistAdd(ctx: Context): Promise<void>;
-  whitelistRemoveConfig(ctx: Context): Promise<CommonMessage & MsgWith<"text">>;
+  whitelistRemoveConfig(ctx: Context): Promise<void>;
   onWhitelistRemove(ctx: Context): Promise<void>;
-  usersConfig(ctx: Context): Promise<CommonMessage & MsgWith<"text">>;
-  resetSusCounterConfig(ctx: Context): Promise<CommonMessage & MsgWith<"text">>;
-  resetSusCounter(ctx: Context): Promise<CommonMessage & MsgWith<"text">>;
+  usersConfig(ctx: Context): Promise<void>;
+  resetSusCounterConfig(ctx: Context): Promise<void>;
+  resetSusCounter(ctx: Context): Promise<void>;
 }

@@ -376,7 +376,8 @@ export class SettingsService implements ISettingsService {
     );
 
     if (nonWhitelistedMembers.length === 0) {
-      return await ctx.reply("All members are already whitelisted.");
+      await ctx.reply("All members are already whitelisted.");
+      return;
     }
 
     const keyboard = new InlineKeyboard();
@@ -415,7 +416,8 @@ export class SettingsService implements ISettingsService {
     );
 
     if (whitelistedMembers.length === 0) {
-      return await ctx.reply("No members are currently whitelisted.");
+      await ctx.reply("No members are currently whitelisted.");
+      return;
     }
 
     const keyboard = new InlineKeyboard();
@@ -454,7 +456,8 @@ export class SettingsService implements ISettingsService {
     });
 
     if (members.length === 0) {
-      return await ctx.reply("No members found in this group.");
+      await ctx.reply("No members found in this group.");
+      return;
     }
 
     // Format all members' data into a single message
@@ -487,7 +490,8 @@ export class SettingsService implements ISettingsService {
     });
 
     if (members.length === 0) {
-      return await ctx.reply("No members available to reset.");
+      await ctx.reply("No members available to reset.");
+      return;
     }
 
     const keyboard = new InlineKeyboard();
