@@ -45,7 +45,7 @@ export class SpamCheckerService implements ISpamCheckerService {
 
     if (!spamResponse.is_suspicious) return;
     if (checkRequest.confidence >= group?.spamMinConfidence!) {
-      await this.handleSpamMessage(ctx, member!, group!);
+      await this.handleSpamMessage(ctx, member!, group!, checkRequest);
     } else if (checkRequest.confidence >= group?.susMinConfidence!) {
       await this.handleSusMessage(ctx, checkRequest, member!);
     }
@@ -72,6 +72,7 @@ export class SpamCheckerService implements ISpamCheckerService {
     ctx: Context,
     member: TgGroupMemberModel,
     group: TgGroupModel,
+    checkRequest: CheckRequestModel,
   ) {
     if (member?.isWhitelisted) return;
 
@@ -90,6 +91,7 @@ export class SpamCheckerService implements ISpamCheckerService {
     }
 
     await ctx.deleteMessage();
+    await this.hidePreviousMessage(ctx, checkRequest);
   }
 
   private async handleSusMessage(
@@ -103,6 +105,7 @@ export class SpamCheckerService implements ISpamCheckerService {
         Math.round(checkRequest.confidence * 100) / 100
       }% likely to be a spam. What would you like to do?`,
       {
+        reply_to_message_id: ctx.message?.message_id,
         reply_markup: new InlineKeyboard()
           .row({
             text: "Report",
@@ -137,6 +140,8 @@ export class SpamCheckerService implements ISpamCheckerService {
   }
 
   public manualReportConfig = async (ctx: Context) => {
+    await this.deletePreviousMessage(ctx);
+
     const id = ctx.callbackQuery?.data?.split("_")[3];
     if (!id) return;
 
@@ -148,6 +153,34 @@ export class SpamCheckerService implements ISpamCheckerService {
     );
     const group = await this.tgGroupRepo.getById(member?.tgGroupId!);
 
-    return await this.handleSpamMessage(ctx, member!, group!);
+    return await this.handleSpamMessage(ctx, member!, group!, checkRequest);
   }
+
+  private deletePreviousMessage = async (ctx: Context) => {
+    const originalMessageId = ctx.callbackQuery?.message?.reply_to_message?.message_id;
+    if (originalMessageId) {
+      try {
+        await ctx.deleteMessages([originalMessageId]);
+      } catch (error) {
+        console.error(`Failed to delete original message: ${error}`);
+      }
+    }
+  }
+
+  private hidePreviousMessage = async (ctx: Context, checkRequest: CheckRequestModel) =>{
+    try {
+      const replyMessage = `The previous message was deleted as it was considered **${Math.round(checkRequest.confidence * 100) / 100}% spam**.\n\nOriginal message:\n||${checkRequest.input}||`;
+      await ctx.reply(
+          this.escapeMarkdownV2(replyMessage),
+          { parse_mode: 'MarkdownV2' }
+      );
+    } catch (error) {
+      console.error(`Failed to send confirmation message: ${error}`);
+    }
+  }
+
+  escapeMarkdownV2(text: string): string {
+    return text.replace(/([_[\]()~`>#+\-={}.!])/g, '\\$1');
+  }
+
 }
