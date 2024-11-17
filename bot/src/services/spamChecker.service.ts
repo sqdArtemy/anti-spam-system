@@ -72,7 +72,7 @@ export class SpamCheckerService implements ISpamCheckerService {
     ctx: Context,
     member: TgGroupMemberModel,
     group: TgGroupModel,
-    checkRequest: CheckRequestModel,
+    checkRequest?: CheckRequestModel,
   ) {
     if (member?.isWhitelisted) return;
 
@@ -90,8 +90,10 @@ export class SpamCheckerService implements ISpamCheckerService {
       await this.muteUser(ctx, member!);
     }
 
-    await ctx.deleteMessage();
-    await this.hidePreviousMessage(ctx, checkRequest);
+    if (checkRequest) {
+      await ctx.deleteMessage();
+      await this.hidePreviousMessage(ctx, checkRequest);
+    }
   }
 
   private async handleSusMessage(
@@ -154,10 +156,11 @@ export class SpamCheckerService implements ISpamCheckerService {
     const group = await this.tgGroupRepo.getById(member?.tgGroupId!);
 
     return await this.handleSpamMessage(ctx, member!, group!, checkRequest);
-  }
+  };
 
   private deletePreviousMessage = async (ctx: Context) => {
-    const originalMessageId = ctx.callbackQuery?.message?.reply_to_message?.message_id;
+    const originalMessageId =
+      ctx.callbackQuery?.message?.reply_to_message?.message_id;
     if (originalMessageId) {
       try {
         await ctx.deleteMessages([originalMessageId]);
@@ -165,22 +168,57 @@ export class SpamCheckerService implements ISpamCheckerService {
         console.error(`Failed to delete original message: ${error}`);
       }
     }
-  }
+  };
 
-  private hidePreviousMessage = async (ctx: Context, checkRequest: CheckRequestModel) =>{
+  private hidePreviousMessage = async (
+    ctx: Context,
+    checkRequest: CheckRequestModel,
+  ) => {
     try {
-      const replyMessage = `The previous message was deleted as it was considered **${Math.round(checkRequest.confidence * 100) / 100}% spam**.\n\nOriginal message:\n||${checkRequest.input}||`;
-      await ctx.reply(
-          this.escapeMarkdownV2(replyMessage),
-          { parse_mode: 'MarkdownV2' }
-      );
+      const replyMessage = `The previous message was deleted as it was considered **${
+        Math.round(checkRequest.confidence * 100) / 100
+      }% spam**.\n\nOriginal message:\n||${checkRequest.input}||`;
+      await ctx.reply(this.escapeMarkdownV2(replyMessage), {
+        parse_mode: "MarkdownV2",
+      });
     } catch (error) {
       console.error(`Failed to send confirmation message: ${error}`);
     }
-  }
+  };
 
   escapeMarkdownV2(text: string): string {
-    return text.replace(/([_[\]()~`>#+\-={}.!])/g, '\\$1');
+    return text.replace(/([_[\]()~`>#+\-={}.!])/g, "\\$1");
   }
 
+  public userReportConfig = async (ctx: Context) => {
+    const externalUserId = ctx.callbackQuery?.data?.split("_")[3];
+    const groupId = ctx.chat?.id!;
+
+    const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
+    const member = await this.tgMemberRepo.getByGroupIdAndUserId(
+      group?.id!,
+      Number(externalUserId!),
+    );
+
+    await this.handleSpamMessage(ctx, member!, group!);
+    await ctx.deleteMessage();
+    await this.hideReportedMessage(ctx);
+  };
+
+  private hideReportedMessage = async (
+      ctx: Context,
+  ) => {
+    try {
+      const originalMessage =
+          ctx.callbackQuery?.message?.reply_to_message;
+
+      const replyMessage = `The previous message was deleted as it was reported
+      \n\nOriginal message:\n||${originalMessage?.text}||`;
+      await ctx.reply(this.escapeMarkdownV2(replyMessage), {
+        parse_mode: "MarkdownV2",
+      });
+    } catch (error) {
+      console.error(`Failed to send confirmation message: ${error}`);
+    }
+  };
 }

@@ -53,12 +53,12 @@ export function CheckRequestFactory(sequelize: Sequelize): CheckRequestStatic {
         allowNull: false,
       },
       userId: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.INTEGER,
         allowNull: true,
         field: "user_id",
       },
       tgGroupMemberId: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.INTEGER,
         allowNull: true,
         field: "telegram_group_member_id",
       },

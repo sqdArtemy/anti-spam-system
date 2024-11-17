@@ -116,7 +116,26 @@ export class CommandService implements ICommandService {
     );
   };
 
-  reportCommand = async (ctx: Context) => {};
+  reportCommand = async (ctx: Context) => {
+    const repliedMessage = ctx.message?.reply_to_message;
+    if (repliedMessage) {
+      await ctx.reply(
+        `The message above has been reported as a spam. What would you like to do?`,
+        {
+          reply_to_message_id: repliedMessage?.message_id, // Reply to the original user's message
+          reply_markup: new InlineKeyboard()
+            .row({
+              text: "Report",
+              callback_data: `user_report_config_${repliedMessage.from?.id}`,
+            })
+            .row({
+              text: "Ignore",
+              callback_data: "exit_config",
+            }),
+        },
+      );
+    }
+  };
 
   setAllCommands = async (bot: Bot) => {
     const commands = [

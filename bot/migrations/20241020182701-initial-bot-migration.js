@@ -179,14 +179,20 @@ module.exports = {
           allowNull: false,
         },
         userId: {
-          type: DataTypes.BIGINT,
+          type: DataTypes.INTEGER,
           allowNull: true,
           field: "user_id",
         },
         tgGroupMemberId: {
-          type: DataTypes.BIGINT,
+          type: DataTypes.INTEGER,
           allowNull: true,
           field: "telegram_group_member_id",
+          references: {
+            model: "telegram_group_member",
+            key: "id",
+          },
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
         },
         checkTime: {
           type: DataTypes.DECIMAL(8, 2),

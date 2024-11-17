@@ -22,12 +22,16 @@ process.on("unhandledRejection", (err: Error): void => {
 const commandService = new CommandService();
 commandService.setAllCommands(bot);
 
-bot.command("start", validateAdmin, commandService.startCommand);
-bot.command("stop", validateAdmin, commandService.stopCommand);
-bot.command("settings", validateAdmin, commandService.settingsCommand);
-bot.command("stats", validateAdmin, commandService.statsCommand);
-bot.command("help", validateAdmin, commandService.helpCommand);
+bot.command("help", commandService.helpCommand);
 bot.command("report", commandService.reportCommand);
+
+// for all other commands allow access only for admin
+bot.use(validateAdmin);
+bot.command("start", commandService.startCommand);
+bot.command("stop", commandService.stopCommand);
+bot.command("settings", commandService.settingsCommand);
+bot.command("stats", commandService.statsCommand);
+
 
 const callbackService = new CallbackService();
 const spamCheckerService = new SpamCheckerService();
@@ -57,6 +61,7 @@ bot.callbackQuery("sus_confidence", callbackService.updateSusThreshold);
 bot.callbackQuery("spam_confidence", callbackService.updateSpamThreshold);
 
 bot.callbackQuery(/manual_report_config_(\d+)/, spamCheckerService.manualReportConfig);
+bot.callbackQuery(/user_report_config_(\d+)/, spamCheckerService.userReportConfig);
 
 bot.on("message:text", async (ctx) => {
   await callbackService.handleInput(ctx);
