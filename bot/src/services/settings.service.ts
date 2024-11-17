@@ -9,8 +9,12 @@ import { Op } from "sequelize";
 import { ISpamCheckerService } from "../interfaces/services/spamCheckerService.interface";
 import { SpamCheckerService } from "./spamChecker.service";
 import { ISettingsService } from "../interfaces/services/settingsService.interface";
+import { UserSettingsService } from "./settings/userSettings.service";
+import { WhitelistSettingsService } from "./settings/whitelistSettings.service";
+import { BanSettingsService } from "./settings/banSettings.service";
+import { ConfidenceSettingsService } from "./settings/confidenceSettings.service";
 
-type UserState =
+export type UserState =
   | "ban_threshold"
   | "mute_threshold"
   | "sus_threshold"
@@ -22,6 +26,10 @@ export class SettingsService implements ISettingsService {
   userStates: Map<number, UserState>;
   commandsService: ICommandService;
   spamCheckerService: ISpamCheckerService;
+  userSettingsService: UserSettingsService;
+  whitelistSettingsService: WhitelistSettingsService;
+  banSettingsService: BanSettingsService;
+  confidenceSettingsService: ConfidenceSettingsService;
 
   public constructor() {
     this.tgGroupRepo = TgGroupRepository.getTgGroupRepository();
@@ -29,6 +37,12 @@ export class SettingsService implements ISettingsService {
     this.userStates = new Map();
     this.commandsService = new CommandService();
     this.spamCheckerService = new SpamCheckerService();
+    this.userSettingsService = new UserSettingsService();
+    this.whitelistSettingsService = new WhitelistSettingsService();
+    this.banSettingsService = new BanSettingsService(this.userStates);
+    this.confidenceSettingsService = new ConfidenceSettingsService(
+      this.userStates,
+    );
   }
 
   exitFromMenu = async (ctx: Context) => {
@@ -36,119 +50,31 @@ export class SettingsService implements ISettingsService {
   };
 
   banAndMuteConfig = async (ctx: Context) => {
-    const keyboard = new InlineKeyboard().row(
-      { text: "Ban settings", callback_data: "ban_config" },
-      { text: "Mute settings", callback_data: "mute_config" },
-      { text: "Exit", callback_data: "exit_config" },
-    );
-
-    await ctx.reply("Please choose an option:", {
-      reply_markup: keyboard,
-    });
+    return await this.banSettingsService.banAndMuteConfig(ctx);
   };
 
   banConfig = async (ctx: Context) => {
-    const groupId = ctx.chat?.id!;
-    const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-
-    await ctx.reply(`
-    Current ban settings:
-    Ban enabled: ${group?.banEnabled === true ? "Yes" : "No"}
-    Ban threshold: ${Number(group?.banThreshold)}
-    `);
-
-    const buttons = [
-      {
-        text: group?.banEnabled ? "Disable ban" : "Enable ban",
-        callback_data: `ban_enable_config`,
-      },
-      { text: "Exit", callback_data: "exit_config" },
-    ];
-
-    if (group?.banEnabled) {
-      buttons.unshift({
-        text: "Change ban settings",
-        callback_data: "ban_threshold_config",
-      });
-    }
-
-    const keyboard = new InlineKeyboard().row(...buttons);
-
-    await ctx.reply("Please choose an option:", {
-      reply_markup: keyboard,
-    });
+    return await this.banSettingsService.banConfig(ctx);
   };
 
   banEnableConfig = async (ctx: Context) => {
-    const groupId = ctx.chat?.id!;
-    let group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-    group = await this.tgGroupRepo.updateGroupParams(groupId, {
-      banEnabled: !group?.banEnabled,
-    });
-
-    if (!group?.banEnabled) await ctx.reply("Ban has been disabled");
-    else await ctx.reply("Ban has been enabled");
-
-    return await this.banConfig(ctx);
+    return await this.banSettingsService.banEnableConfig(ctx);
   };
 
   muteConfig = async (ctx: Context) => {
-    const groupId = ctx.chat?.id!;
-    const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-
-    await ctx.reply(`
-    Current mute settings:
-    Mute enabled: ${group?.muteEnabled === true ? "Yes" : "No"}
-    Mute threshold: ${Number(group?.muteThreshold)}
-    `);
-
-    const buttons = [
-      {
-        text: group?.muteEnabled ? "Disable mute" : "Enable mute",
-        callback_data: `mute_enable_config`,
-      },
-      { text: "Exit", callback_data: "exit_config" },
-    ];
-
-    if (group?.muteEnabled) {
-      buttons.unshift({
-        text: "Change mute settings",
-        callback_data: "mute_threshold_config",
-      });
-    }
-
-    const keyboard = new InlineKeyboard().row(...buttons);
-
-    await ctx.reply("Please choose an option:", {
-      reply_markup: keyboard,
-    });
+    return await this.banSettingsService.muteConfig(ctx);
   };
 
   muteEnableConfig = async (ctx: Context) => {
-    const groupId = ctx.chat?.id!;
-    let group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-    group = await this.tgGroupRepo.updateGroupParams(groupId, {
-      muteEnabled: !group?.muteEnabled,
-    });
-
-    if (!group?.banEnabled) await ctx.reply("Mute has been disabled");
-    else await ctx.reply("Mute has been enabled");
-
-    return await this.muteConfig(ctx);
+    return await this.banSettingsService.muteEnableConfig(ctx);
   };
 
   banThresholdConfig = async (ctx: Context) => {
-    await ctx.reply(
-      "Please enter a number between 1 and 10 for the ban threshold:",
-    );
-    this.userStates.set(ctx.chat?.id!, "ban_threshold");
+    return await this.banSettingsService.banThresholdConfig(ctx);
   };
 
   muteThresholdConfig = async (ctx: Context) => {
-    await ctx.reply(
-      "Please enter a number between 1 and 10 for the mute threshold:",
-    );
-    this.userStates.set(ctx.chat?.id!, "mute_threshold");
+    return await this.banSettingsService.muteThresholdConfig(ctx);
   };
 
   handleInput = async (ctx: Context) => {
@@ -328,202 +254,34 @@ export class SettingsService implements ISettingsService {
   };
 
   whitelistConfig = async (ctx: Context) => {
-    const groupId = ctx.chat?.id!;
-    const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-
-    const whitelistedMembers = await this.tgMemberRepo.getAllWhitelisted(
-      group?.id!,
-    );
-    const nonWhitelistedMembers = await this.tgMemberRepo.getAllNonWhitelisted(
-      group?.id!,
-    );
-
-    let message = "Current Whitelisted Members:\n";
-    if (whitelistedMembers.length > 0) {
-      message += whitelistedMembers
-        .map(
-          (member) => `- ${member.externalUsername || member.externalUserId}`,
-        )
-        .join("\n");
-    } else {
-      message += "No members are currently whitelisted.";
-    }
-
-    await ctx.reply(message);
-
-    const buttons = [
-      ...(nonWhitelistedMembers.length > 0
-        ? [{ text: "Add to whitelist", callback_data: "whitelist_add" }]
-        : []),
-      ...(whitelistedMembers.length > 0
-        ? [{ text: "Remove from whitelist", callback_data: "whitelist_remove" }]
-        : []),
-      { text: "Exit", callback_data: "exit_config" },
-    ];
-
-    const keyboard = new InlineKeyboard().row(...buttons);
-
-    await ctx.reply("Please choose an option:", {
-      reply_markup: keyboard,
-    });
+    return await this.whitelistSettingsService.whitelistConfig(ctx);
   };
 
   whitelistAddConfig = async (ctx: Context) => {
-    const groupId = ctx.chat?.id!;
-    const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-    const nonWhitelistedMembers = await this.tgMemberRepo.getAllNonWhitelisted(
-      group?.id!,
-    );
-
-    if (nonWhitelistedMembers.length === 0) {
-      await ctx.reply("All members are already whitelisted.");
-      return;
-    }
-
-    const keyboard = new InlineKeyboard();
-    nonWhitelistedMembers.forEach((member) => {
-      keyboard.row({
-        text: member.externalUsername || String(member.externalUserId),
-        callback_data: `whitelist_add_${member.id}`,
-      });
-    });
-    keyboard.row({ text: "Exit", callback_data: "exit_config" });
-
-    await ctx.reply("Select a member to add to the whitelist:", {
-      reply_markup: keyboard,
-    });
+    return await this.whitelistSettingsService.whitelistAddConfig(ctx);
   };
 
   onWhitelistAdd = async (ctx: Context) => {
-    if (ctx.match && ctx.match[1]) {
-      const memberId = parseInt(ctx.match[1], 10);
-
-      await this.tgMemberRepo.updateMember(memberId, {
-        isWhitelisted: true,
-      });
-
-      await ctx.reply("Member has been added to the whitelist.");
-      return await this.whitelistConfig(ctx);
-    }
+    return await this.whitelistSettingsService.onWhitelistAdd(ctx);
   };
 
   whitelistRemoveConfig = async (ctx: Context) => {
-    const groupId = ctx.chat?.id!;
-    const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-
-    const whitelistedMembers = await this.tgMemberRepo.getAllWhitelisted(
-      group?.id!,
-    );
-
-    if (whitelistedMembers.length === 0) {
-      await ctx.reply("No members are currently whitelisted.");
-      return;
-    }
-
-    const keyboard = new InlineKeyboard();
-    whitelistedMembers.forEach((member) => {
-      keyboard.row({
-        text: member.externalUsername || String(member.externalUserId),
-        callback_data: `whitelist_remove_${member.id}`,
-      });
-    });
-    keyboard.row({ text: "Exit", callback_data: "exit_config" });
-
-    await ctx.reply("Select a member to remove from the whitelist:", {
-      reply_markup: keyboard,
-    });
+    return await this.whitelistSettingsService.whitelistRemoveConfig(ctx);
   };
 
   onWhitelistRemove = async (ctx: Context) => {
-    if (ctx.match && ctx.match[1]) {
-      const memberId = parseInt(ctx.match[1], 10);
-
-      await this.tgMemberRepo.updateMember(memberId, {
-        isWhitelisted: false,
-      });
-
-      await ctx.reply("Member has been removed from the whitelist.");
-      return await this.whitelistConfig(ctx);
-    }
+    return await this.whitelistSettingsService.onWhitelistRemove(ctx);
   };
 
   usersConfig = async (ctx: Context) => {
-    const groupId = ctx.chat?.id!;
-    const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-
-    const members = await this.tgMemberRepo.getAllByFilters({
-      tgGroupId: group?.id,
-    });
-
-    if (members.length === 0) {
-      await ctx.reply("No members found in this group.");
-      return;
-    }
-
-    // Format all members' data into a single message
-    let message = "Group Members:\n\n";
-    members.forEach((member) => {
-      message += `
-      Username: ${member.externalUsername || String(member.externalUserId)}
-      Suspicious Messages: ${member.susCounter}
-      Blacklisted: ${member.isBlacklisted ? "Yes" : "No"}
-      Created At: ${member.createdAt}
-      
-      `;
-    });
-
-    const keyboard = new InlineKeyboard()
-      .row({ text: "Reset Sus Counter", callback_data: "reset_sus_counter" })
-      .row({ text: "Exit", callback_data: "exit_config" });
-
-    await ctx.reply(message.trim(), {
-      reply_markup: keyboard,
-    });
+    return await this.userSettingsService.usersConfig(ctx);
   };
 
   resetSusCounterConfig = async (ctx: Context) => {
-    const groupId = ctx.chat?.id!;
-    const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-    const members = await this.tgMemberRepo.getAllByFilters({
-      tgGroupId: group?.id,
-      susCounter: { [Op.gt]: 0 },
-    });
-
-    if (members.length === 0) {
-      await ctx.reply("No members available to reset.");
-      return;
-    }
-
-    const keyboard = new InlineKeyboard();
-    members.forEach((member) => {
-      keyboard.row({
-        text: member.externalUsername || String(member.externalUserId),
-        callback_data: `reset_sus_${member.id}`,
-      });
-    });
-    keyboard.row({ text: "Exit", callback_data: "exit_config" });
-
-    await ctx.reply(
-      "Select a user to reset their suspicious message counter:",
-      {
-        reply_markup: keyboard,
-      },
-    );
+    return await this.userSettingsService.resetSusCounterConfig(ctx);
   };
 
   resetSusCounter = async (ctx: Context) => {
-    if (ctx.match && ctx.match[1]) {
-      const memberId = parseInt(ctx.match[1], 10);
-
-      await this.tgMemberRepo.updateMember(memberId, {
-        susCounter: 0,
-      });
-
-      await ctx.reply(
-        "Suspicious message counter has been reset for the selected user.",
-      );
-
-      return await this.usersConfig(ctx);
-    }
+    return await this.userSettingsService.resetSusCounter(ctx);
   };
 }
