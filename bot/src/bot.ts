@@ -7,6 +7,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import { validateAdmin } from "./middleware/validators";
 import { SettingsService } from "./services/settings.service";
 import { SpamCheckerService } from "./services/spamChecker.service";
+import {StatsService} from "./services/stats.service";
 
 dotenv.config({ path: "./.env" });
 
@@ -25,47 +26,52 @@ commandService.setAllCommands(bot);
 bot.command("help", commandService.helpCommand);
 bot.command("report", commandService.reportCommand);
 
-// for all other commands allow access only for admin
-bot.use(validateAdmin);
-bot.command("start", commandService.startCommand);
-bot.command("stop", commandService.stopCommand);
-bot.command("settings", commandService.settingsCommand);
-bot.command("stats", commandService.statsCommand);
+bot.command("start", validateAdmin, commandService.startCommand);
+bot.command("stop", validateAdmin, commandService.stopCommand);
+bot.command("settings", validateAdmin, commandService.settingsCommand);
+bot.command("stats", validateAdmin, commandService.statsCommand);
 
 const callbackService = new SettingsService();
 const spamCheckerService = new SpamCheckerService();
+const statsService = new StatsService();
 
-bot.callbackQuery("exit_config", callbackService.exitFromMenu);
+bot.callbackQuery("exit_config", validateAdmin, callbackService.exitFromMenu);
 
-bot.callbackQuery("users_config", callbackService.usersConfig);
-bot.callbackQuery("reset_sus_counter", callbackService.resetSusCounterConfig);
-bot.callbackQuery(/reset_sus_(\d+)/, callbackService.resetSusCounter);
+bot.callbackQuery("users_config", validateAdmin, callbackService.usersConfig);
+bot.callbackQuery("reset_sus_counter", validateAdmin, callbackService.resetSusCounterConfig);
+bot.callbackQuery(/reset_sus_(\d+)/, validateAdmin, callbackService.resetSusCounter);
 
-bot.callbackQuery("whitelist_config", callbackService.whitelistConfig);
-bot.callbackQuery("whitelist_add", callbackService.whitelistAddConfig);
-bot.callbackQuery(/whitelist_add_(\d+)/, callbackService.onWhitelistAdd);
-bot.callbackQuery("whitelist_remove", callbackService.whitelistRemoveConfig);
-bot.callbackQuery(/whitelist_remove_(\d+)/, callbackService.onWhitelistRemove);
+bot.callbackQuery("whitelist_config", validateAdmin, callbackService.whitelistConfig);
+bot.callbackQuery("whitelist_add", validateAdmin, callbackService.whitelistAddConfig);
+bot.callbackQuery(/whitelist_add_(\d+)/, validateAdmin, callbackService.onWhitelistAdd);
+bot.callbackQuery("whitelist_remove", validateAdmin, callbackService.whitelistRemoveConfig);
+bot.callbackQuery(/whitelist_remove_(\d+)/, validateAdmin, callbackService.onWhitelistRemove);
 
-bot.callbackQuery("action_config", callbackService.banAndMuteConfig);
-bot.callbackQuery("ban_config", callbackService.banConfig);
-bot.callbackQuery("ban_enable_config", callbackService.banEnableConfig);
-bot.callbackQuery("ban_threshold_config", callbackService.banThresholdConfig);
-bot.callbackQuery("mute_config", callbackService.muteConfig);
-bot.callbackQuery("mute_enable_config", callbackService.muteEnableConfig);
-bot.callbackQuery("mute_threshold_config", callbackService.muteThresholdConfig);
+bot.callbackQuery("action_config", validateAdmin, callbackService.banAndMuteConfig);
+bot.callbackQuery("ban_config", validateAdmin, callbackService.banConfig);
+bot.callbackQuery("ban_enable_config", validateAdmin, callbackService.banEnableConfig);
+bot.callbackQuery("ban_threshold_config", validateAdmin, callbackService.banThresholdConfig);
+bot.callbackQuery("mute_config", validateAdmin, callbackService.muteConfig);
+bot.callbackQuery("mute_enable_config", validateAdmin, callbackService.muteEnableConfig);
+bot.callbackQuery("mute_threshold_config", validateAdmin, callbackService.muteThresholdConfig);
 
-bot.callbackQuery("confidence_config", callbackService.confidenceConfig);
-bot.callbackQuery("sus_confidence", callbackService.updateSusThreshold);
-bot.callbackQuery("spam_confidence", callbackService.updateSpamThreshold);
+bot.callbackQuery("confidence_config", validateAdmin, callbackService.confidenceConfig);
+bot.callbackQuery("sus_confidence", validateAdmin, callbackService.updateSusThreshold);
+bot.callbackQuery("spam_confidence", validateAdmin, callbackService.updateSpamThreshold);
+
+bot.callbackQuery("url_stats", validateAdmin, statsService.getUrlStats);
+bot.callbackQuery("user_stats", validateAdmin, statsService.getUserStats);
+bot.callbackQuery("word_stats", validateAdmin, statsService.getWordStats);
 
 bot.callbackQuery(
   /manual_report_config_(\d+)/,
-  spamCheckerService.manualReportConfig,
+    validateAdmin,
+    spamCheckerService.manualReportConfig,
 );
 bot.callbackQuery(
   /user_report_config_(\d+)/,
-  spamCheckerService.userReportConfig,
+    validateAdmin,
+    spamCheckerService.userReportConfig,
 );
 
 bot.on("message:text", async (ctx) => {

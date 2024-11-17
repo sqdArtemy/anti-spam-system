@@ -83,12 +83,12 @@ export class SettingsService implements ISettingsService {
     const memberId = ctx.from?.id!;
 
     const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
-
-    let member = await this.tgMemberRepo.getByGroupIdAndUserId(
+    let existingMember = await this.tgMemberRepo.getByGroupIdAndUserId(
       group?.id!,
       memberId,
     );
-    if (!member) {
+
+    if (!existingMember) {
       const username = ctx.from?.username!;
       await this.tgMemberRepo.addMember(group?.id!, memberId, username);
     }
@@ -119,6 +119,8 @@ export class SettingsService implements ISettingsService {
         group?.id!,
         memberId,
       );
+
+      if(member?.isWhitelisted) return;
 
       const message = ctx.message?.text || "";
       if (message.length > 20 && message.split(" ").length >= 5) {

@@ -1,9 +1,7 @@
-import { ICheckRequestRepository } from "../interfaces/repositories/checkRequest.interface";
-import {
-  CheckRequestAttrs,
-  CheckRequestModel,
-} from "../models/checkRequest.model";
-import { CheckRequest, TgGroupMember } from "../models";
+import {ICheckRequestRepository} from "../interfaces/repositories/checkRequest.interface";
+import {CheckRequestAttrs, CheckRequestModel,} from "../models/checkRequest.model";
+import {CheckRequest, TgGroupMember} from "../models";
+import {GroupedCountResultItem} from "sequelize";
 
 export class CheckRequestRepository implements ICheckRequestRepository {
   static #instance: CheckRequestRepository;
@@ -37,7 +35,7 @@ export class CheckRequestRepository implements ICheckRequestRepository {
       include: [
         {
           model: TgGroupMember,
-          as: "member",
+          as: "tgGroupMember",
           where: {
             tgGroupId: groupId,
           },
@@ -45,4 +43,23 @@ export class CheckRequestRepository implements ICheckRequestRepository {
       ],
     });
   }
+
+  public async getTopSpammersByGroup(groupId: number): Promise<GroupedCountResultItem[]> {
+    return await CheckRequest.count({
+      where: {
+        isSus: true,
+      },
+      include: [
+        {
+          model: TgGroupMember,
+          as: "tgGroupMember",
+          where: {
+            tgGroupId: groupId,
+          },
+        },
+      ],
+      group: ["tgGroupMemberId", "tgGroupMember.external_username"],
+    });
+  }
 }
+

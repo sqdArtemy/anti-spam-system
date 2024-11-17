@@ -12,7 +12,7 @@ export async function validateAdmin(
 
   const userId = ctx.from?.id!;
   if (await isAdmin(ctx, userId)) {
-    await next();
+    return await next();
   }
 }
 
