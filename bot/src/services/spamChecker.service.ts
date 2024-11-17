@@ -58,10 +58,10 @@ export class SpamCheckerService implements ISpamCheckerService {
     const client = new WorkflowClient({ connection });
 
     const wordsCount = text.split(" ").length;
-    const limit = Math.min(Math.floor(wordsCount / 3), 10);
+    const limit = Math.min(Math.floor(wordsCount / 5), 10);
 
     const handle = await client.start("AnalyzeEmailWorkflow", {
-      args: [{ email: text, words_numbers: limit }],
+      args: [JSON.stringify({ email: text, image_path: '', words_number: limit })],
       taskQueue: process.env.TASK_QUEUE!,
       workflowId: "analyze-email-workflow-id6",
     });
