@@ -11,7 +11,7 @@ const initializeLogger = () => {
         format.colorize(),
         format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
         format.errors({ stack: true }),
-        logFormat
+        logFormat,
       ),
       defaultMeta: { service: serviceName },
       transports: [
@@ -22,7 +22,7 @@ const initializeLogger = () => {
           format: format.combine(
             format.timestamp(),
             format.errors({ stack: true }),
-            format.json()
+            format.json(),
           ),
         }),
       ],

@@ -6,6 +6,6 @@ export interface ITgGroupRepository {
   getByExternalGroupId(externalGroupId: number): Promise<TgGroupModel | null>;
   updateGroupParams(
     externalGroupId: number,
-    params: TgGroupAttrs
+    params: TgGroupAttrs,
   ): Promise<TgGroupModel | null>;
 }

@@ -3,7 +3,7 @@ import { BadRequestError } from "./badRequestError";
 
 export async function validateAdmin(
   ctx: Context,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   const isValid = ctx.chat?.type === "group" || ctx.chat?.type === "supergroup";
   if (!isValid) {
@@ -18,7 +18,7 @@ export async function validateAdmin(
 
 export const isAdmin = async (
   ctx: Context,
-  userId: number
+  userId: number,
 ): Promise<boolean> => {
   const chatMember = await ctx.getChatMember(userId);
   return (

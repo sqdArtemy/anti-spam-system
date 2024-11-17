@@ -1,4 +1,7 @@
-import {ITgGroupMemberRepository, IUpdateMember} from "../interfaces/repositories/tgGroupMember.interface";
+import {
+  ITgGroupMemberRepository,
+  IUpdateMember,
+} from "../interfaces/repositories/tgGroupMember.interface";
 import {
   TgGroupMemberAttrs,
   TgGroupMemberModel,
@@ -22,7 +25,7 @@ export class TgGroupMemberRepository implements ITgGroupMemberRepository {
   public async addMember(
     tgGroupId: number,
     externalId: number,
-    username: string
+    username: string,
   ): Promise<TgGroupMemberModel> {
     return await TgGroupMember.create({
       tgGroupId,
@@ -38,7 +41,7 @@ export class TgGroupMemberRepository implements ITgGroupMemberRepository {
   }
 
   public async getAllByFilters(
-    filters: WhereOptions<TgGroupMemberAttrs>
+    filters: WhereOptions<TgGroupMemberAttrs>,
   ): Promise<TgGroupMemberModel[]> {
     return await TgGroupMember.findAll({
       where: filters,
@@ -46,7 +49,7 @@ export class TgGroupMemberRepository implements ITgGroupMemberRepository {
   }
 
   public async getAllNonWhitelisted(
-    tgGroupId: number
+    tgGroupId: number,
   ): Promise<TgGroupMemberModel[]> {
     return await TgGroupMember.findAll({
       where: { tgGroupId, isWhitelisted: false },
@@ -54,7 +57,7 @@ export class TgGroupMemberRepository implements ITgGroupMemberRepository {
   }
 
   public async getAllWhitelisted(
-    tgGroupId: number
+    tgGroupId: number,
   ): Promise<TgGroupMemberModel[]> {
     return await TgGroupMember.findAll({
       where: { tgGroupId, isWhitelisted: true },
@@ -63,7 +66,7 @@ export class TgGroupMemberRepository implements ITgGroupMemberRepository {
 
   public async getByGroupIdAndUserId(
     tgGroupId: number,
-    externalId: number
+    externalId: number,
   ): Promise<TgGroupMemberModel | null> {
     return await TgGroupMember.findOne({
       where: {
@@ -79,7 +82,7 @@ export class TgGroupMemberRepository implements ITgGroupMemberRepository {
 
   public async updateMember(
     id: number,
-    params: IUpdateMember
+    params: IUpdateMember,
   ): Promise<TgGroupMemberModel | null> {
     await TgGroupMember.update(params, {
       where: { id },

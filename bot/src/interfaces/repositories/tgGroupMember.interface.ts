@@ -8,22 +8,22 @@ export interface ITgGroupMemberRepository {
   addMember(
     tgGroupId: number,
     externalId: number,
-    username: string
+    username: string,
   ): Promise<TgGroupMemberModel>;
   getById(id: number): Promise<TgGroupMemberModel | null>;
   getByGroupIdAndUserId(
     tgGroupId: number,
-    externalId: number
+    externalId: number,
   ): Promise<TgGroupMemberModel | null>;
   getAll(tgGroupId: number): Promise<TgGroupMemberModel[]>;
   getAllWhitelisted(tgGroupId: number): Promise<TgGroupMemberModel[]>;
   getAllNonWhitelisted(tgGroupId: number): Promise<TgGroupMemberModel[]>;
   updateMember(
     id: number,
-    params: IUpdateMember
+    params: IUpdateMember,
   ): Promise<TgGroupMemberModel | null>;
   getAllByFilters(
-    filters: WhereOptions<TgGroupMemberAttrs>
+    filters: WhereOptions<TgGroupMemberAttrs>,
   ): Promise<TgGroupMemberModel[]>;
 }
 

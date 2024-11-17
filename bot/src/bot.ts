@@ -5,8 +5,8 @@ import { databaseConfig } from "./models/config";
 import { CommandService } from "./services/command.service";
 import { errorHandler } from "./middleware/errorHandler";
 import { validateAdmin } from "./middleware/validators";
-import { CallbackService } from "./services/callbacks.service";
-import {SpamCheckerService} from "./services/spamChecker.service";
+import { SettingsService } from "./services/settings.service";
+import { SpamCheckerService } from "./services/spamChecker.service";
 
 dotenv.config({ path: "./.env" });
 
@@ -32,8 +32,7 @@ bot.command("stop", commandService.stopCommand);
 bot.command("settings", commandService.settingsCommand);
 bot.command("stats", commandService.statsCommand);
 
-
-const callbackService = new CallbackService();
+const callbackService = new SettingsService();
 const spamCheckerService = new SpamCheckerService();
 
 bot.callbackQuery("exit_config", callbackService.exitFromMenu);
@@ -60,8 +59,14 @@ bot.callbackQuery("confidence_config", callbackService.confidenceConfig);
 bot.callbackQuery("sus_confidence", callbackService.updateSusThreshold);
 bot.callbackQuery("spam_confidence", callbackService.updateSpamThreshold);
 
-bot.callbackQuery(/manual_report_config_(\d+)/, spamCheckerService.manualReportConfig);
-bot.callbackQuery(/user_report_config_(\d+)/, spamCheckerService.userReportConfig);
+bot.callbackQuery(
+  /manual_report_config_(\d+)/,
+  spamCheckerService.manualReportConfig,
+);
+bot.callbackQuery(
+  /user_report_config_(\d+)/,
+  spamCheckerService.userReportConfig,
+);
 
 bot.on("message:text", async (ctx) => {
   await callbackService.handleInput(ctx);

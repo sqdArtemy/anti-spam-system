@@ -207,12 +207,9 @@ export class SpamCheckerService implements ISpamCheckerService {
     await this.hideReportedMessage(ctx);
   };
 
-  private hideReportedMessage = async (
-      ctx: Context,
-  ) => {
+  private hideReportedMessage = async (ctx: Context) => {
     try {
-      const originalMessage =
-          ctx.callbackQuery?.message?.reply_to_message;
+      const originalMessage = ctx.callbackQuery?.message?.reply_to_message;
 
       const replyMessage = `The previous message was deleted as it was reported
       \n\nOriginal message:\n||${originalMessage?.text}||`;

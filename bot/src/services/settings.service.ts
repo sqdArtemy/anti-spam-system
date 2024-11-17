@@ -8,6 +8,7 @@ import { TgGroupModel } from "../models/tgGroup.model";
 import { Op } from "sequelize";
 import { ISpamCheckerService } from "../interfaces/services/spamCheckerService.interface";
 import { SpamCheckerService } from "./spamChecker.service";
+import { ISettingsService } from "../interfaces/services/settingsService.interface";
 
 type UserState =
   | "ban_threshold"
@@ -15,7 +16,7 @@ type UserState =
   | "sus_threshold"
   | "spam_threshold";
 
-export class CallbackService {
+export class SettingsService implements ISettingsService {
   tgGroupRepo: ITgGroupRepository;
   tgMemberRepo: TgGroupMemberRepository;
   userStates: Map<number, UserState>;

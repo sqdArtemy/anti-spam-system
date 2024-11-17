@@ -6,4 +6,5 @@ import {
 export interface ICheckRequestRepository {
   addCheckRequest(params: CheckRequestAttrs): Promise<CheckRequestModel>;
   getById(id: number): Promise<CheckRequestModel | null>;
+  getAllSpamByGroup(groupId: number): Promise<CheckRequestModel[]>;
 }

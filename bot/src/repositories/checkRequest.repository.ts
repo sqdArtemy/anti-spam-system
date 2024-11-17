@@ -3,7 +3,7 @@ import {
   CheckRequestAttrs,
   CheckRequestModel,
 } from "../models/checkRequest.model";
-import { CheckRequest } from "../models";
+import { CheckRequest, TgGroupMember } from "../models";
 
 export class CheckRequestRepository implements ICheckRequestRepository {
   static #instance: CheckRequestRepository;
@@ -18,12 +18,31 @@ export class CheckRequestRepository implements ICheckRequestRepository {
   }
 
   public async addCheckRequest(
-    params: CheckRequestAttrs
+    params: CheckRequestAttrs,
   ): Promise<CheckRequestModel> {
     return await CheckRequest.create<CheckRequestModel>(params);
   }
 
   public async getById(id: number): Promise<CheckRequestModel | null> {
     return await CheckRequest.findByPk(id);
+  }
+
+  public async getAllSpamByGroup(
+    groupId: number,
+  ): Promise<CheckRequestModel[]> {
+    return await CheckRequest.findAll({
+      where: {
+        isSus: true,
+      },
+      include: [
+        {
+          model: TgGroupMember,
+          as: "member",
+          where: {
+            tgGroupId: groupId,
+          },
+        },
+      ],
+    });
   }
 }

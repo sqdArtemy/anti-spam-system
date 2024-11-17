@@ -25,7 +25,7 @@ export type TgGroupMemberStatic = typeof Model & {
 };
 
 export function TgGroupMemberFactory(
-  sequelize: Sequelize
+  sequelize: Sequelize,
 ): TgGroupMemberStatic {
   return <TgGroupMemberStatic>sequelize.define(
     "telegram_group_member",
@@ -74,13 +74,13 @@ export function TgGroupMemberFactory(
         type: DataTypes.DATE,
         allowNull: false,
         field: "created_at",
-        defaultValue: DataTypes.NOW
-      }
+        defaultValue: DataTypes.NOW,
+      },
     },
     {
       createdAt: "created_at",
       updatedAt: "updated_at",
       freezeTableName: true,
-    }
+    },
   );
 }

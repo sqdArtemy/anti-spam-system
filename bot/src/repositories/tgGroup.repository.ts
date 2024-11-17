@@ -21,7 +21,7 @@ export class TgGroupRepository implements ITgGroupRepository {
   }
 
   public async getByExternalGroupId(
-    externalGroupId: number
+    externalGroupId: number,
   ): Promise<TgGroupModel | null> {
     return await TgGroup.findOne<TgGroupModel>({
       where: {
@@ -36,7 +36,7 @@ export class TgGroupRepository implements ITgGroupRepository {
 
   public async updateGroupParams(
     externalGroupId: number,
-    params: TgGroupAttrs
+    params: TgGroupAttrs,
   ): Promise<TgGroupModel | null> {
     await TgGroup.update(params, {
       where: { externalGroupId },

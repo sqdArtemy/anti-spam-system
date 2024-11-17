@@ -14,5 +14,5 @@ export const databaseConfig = new sequelize.Sequelize(
     define: {
       timestamps: true,
     },
-  }
+  },
 );
