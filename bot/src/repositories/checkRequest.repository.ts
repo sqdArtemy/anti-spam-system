@@ -22,4 +22,8 @@ export class CheckRequestRepository implements ICheckRequestRepository {
   ): Promise<CheckRequestModel> {
     return await CheckRequest.create<CheckRequestModel>(params);
   }
+
+  public async getById(id: number): Promise<CheckRequestModel | null> {
+    return await CheckRequest.findByPk(id);
+  }
 }

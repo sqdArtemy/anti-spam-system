@@ -157,8 +157,11 @@ export class CallbackService {
 
     const group = await this.tgGroupRepo.getByExternalGroupId(groupId);
 
-    let member = await this.tgMemberRepo.getByGroupIdAndUserId(group?.id!, memberId);
-    if(!member){
+    let member = await this.tgMemberRepo.getByGroupIdAndUserId(
+      group?.id!,
+      memberId,
+    );
+    if (!member) {
       const username = ctx.from?.username!;
       await this.tgMemberRepo.addMember(group?.id!, memberId, username);
     }
