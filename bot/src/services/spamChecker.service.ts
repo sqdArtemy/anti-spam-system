@@ -161,6 +161,7 @@ export class SpamCheckerService implements ISpamCheckerService {
   private deletePreviousMessage = async (ctx: Context) => {
     const originalMessageId =
       ctx.callbackQuery?.message?.reply_to_message?.message_id;
+
     if (originalMessageId) {
       try {
         await ctx.deleteMessages([originalMessageId]);
@@ -200,8 +201,9 @@ export class SpamCheckerService implements ISpamCheckerService {
       Number(externalUserId!),
     );
 
-    await this.handleSpamMessage(ctx, member!, group!);
     await ctx.deleteMessage();
+    await this.handleSpamMessage(ctx, member!, group!);
+    await this.deletePreviousMessage(ctx);
     await this.hideReportedMessage(ctx);
   };
 

@@ -118,6 +118,7 @@ export class CommandService implements ICommandService {
 
   reportCommand = async (ctx: Context) => {
     const repliedMessage = ctx.message?.reply_to_message;
+    await ctx.deleteMessage();
     if (repliedMessage) {
       await ctx.reply(
         `The message above has been reported as a spam. What would you like to do?`,
