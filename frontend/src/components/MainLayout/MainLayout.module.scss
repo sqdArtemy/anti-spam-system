@@ -30,7 +30,6 @@
         font-size: 1.5rem;
         font-weight: bold;
         margin-left: 1rem;
-
       }
     }
   }
@@ -48,13 +47,24 @@
       top: 10vh;
       left: 0;
       background-color: white;
+      transition: width 0.3s ease;
+
+      &:hover {
+        width: 12vw;
+      }
     }
 
     .main-content-container {
       margin-left: 5vw;
-      width: 95vw;
+      width: calc(100% - 5vw);
       padding: 1rem;
       min-height: 90vh;
+      transition: margin-left 0.3s ease, width 0.3s ease;
+
+      .side-bar-container:hover + & {
+        margin-left: 12vw;
+        width: calc(100% - 12vw);
+      }
     }
   }
 }
