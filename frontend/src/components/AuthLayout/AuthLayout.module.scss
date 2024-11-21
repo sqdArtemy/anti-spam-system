@@ -1,0 +1,77 @@
+.main-container {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.inner-container {
+  width: 40vw;
+  min-height: 65vh;
+}
+
+
+.form-container {
+  width: 40vw;
+  min-height: 65vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+
+  .form-header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+
+    .form-header-text {
+      font-size: 2.5rem;
+      font-weight: 700;
+      word-break: break-word;
+      width: 25rem;
+      text-align: center;
+    }
+
+    .form-header-desc {
+      font-size: 1.2rem;
+
+    }
+
+  }
+
+  input {
+    width: 25rem;
+  }
+
+  button {
+    width: 27rem;
+  }
+
+  .form-bottom-text {
+    font-size: 1.2rem;
+    text-align: center;
+    width: 25rem;
+
+    a {
+      color: rgba(5, 84, 202, 0.932);
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.3s ease-in-out;
+      font-weight: 400;
+    }
+
+    a:hover {
+      color: rgba(3, 14, 109, 0.892);
+    }
+
+
+  }
+
+}
+
