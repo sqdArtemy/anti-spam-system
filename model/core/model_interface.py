@@ -12,54 +12,55 @@ with workflow.unsafe.imports_passed_through():
     import nltk
     from torch import tensor
     from nltk.corpus import stopwords
-    from nltk.stem import PorterStemmer
+    from nltk.stem import WordNetLemmatizer
 
 
 nltk.download('stopwords')
+nltk.download('wordnet')
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 def preprocess_text(text: str) -> str:
-    logging.info("Start preprocessing text.")
     lower_text = text.lower()
     text_without_links = re.sub(r'http\S+|www\S+|https\S+', '', lower_text, flags=re.MULTILINE)
     plain_text = re.sub(r'[^a-zA-Z\s]', '', text_without_links)
-    logging.info("Finish preprocessing text.")
     return plain_text
 
 
-def tokenizer(text) -> list[str]:
-    logging.info("Start tokenizing text.")
-    stemmer = PorterStemmer()
+def tokenizer(text: str) -> list[str]:
+    lemmatizer = WordNetLemmatizer()
     tokens = re.findall(r'\b\w+\b', text)
 
     stop_words = set(stopwords.words("english"))
     tokens = [word for word in tokens if word not in stop_words]
 
-    tokens = [stemmer.stem(word) for word in tokens]
-    logging.info("Finish tokenizing text.")
+    tokens = [lemmatizer.lemmatize(word) for word in tokens]
     return tokens
 
 
 # Model
 class PhishingDetectorModel(nn.Module):
-    def __init__(self, input_size: int, hidden_size: int, hidden_size_2: int, output_size: int):
+    def __init__(self, input_size: int, hidden_size: int, hidden_size_2: int, output_size: int,
+                 dropout_rate: float) -> None:
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
+        self.hidden_size_2 = hidden_size_2
         self.output_size = output_size
-        self.layers = nn.ModuleList([
+        self.layers = nn.Sequential(
             nn.Linear(input_size, hidden_size),
             nn.ReLU(),
+            nn.BatchNorm1d(hidden_size),
+            nn.Dropout(p=dropout_rate),
             nn.Linear(hidden_size, hidden_size_2),
             nn.ReLU(),
+            nn.BatchNorm1d(hidden_size_2),
+            nn.Dropout(p=dropout_rate),
             nn.Linear(hidden_size_2, output_size)
-        ])
+        )
 
-    def forward(self, x):
-        for layer in self.layers:
-            x = layer(x)
-        return x
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.layers(x)
 
 
 # Core logic function that will serve like an interface

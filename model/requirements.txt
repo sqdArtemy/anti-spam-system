@@ -20,3 +20,4 @@ dill
 pytesseract
 minio
 python-dotenv
+seaborn
