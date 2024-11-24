@@ -17,6 +17,10 @@ export class TgGroupRepository implements ITgGroupRepository {
   public async addGroup(externalGroupId: number): Promise<TgGroupModel> {
     return await TgGroup.create({
       externalGroupId,
+      banEnabled: true,
+      banThreshold: 10,
+      muteEnabled: false,
+      muteThreshold: 10,
     });
   }
 

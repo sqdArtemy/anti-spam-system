@@ -129,7 +129,8 @@ services:
       - anti-spam-network
     ports:
       - 3003:3003
-
+    volumes:
+      - ../bot:/app
 
 
 volumes:
