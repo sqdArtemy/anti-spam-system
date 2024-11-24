@@ -47,6 +47,18 @@ class ExtractTextActivity:
         return text
 
 
+class SentimentAnalysisActivity:
+    def __init__(self, analysis_model):
+        self.analysis_model = analysis_model
+
+    async def analyze_sentiment(self, text: str) -> str:
+        logging.info("Performing sentiment analysis.")
+        result = self.analysis_model(text)[0]
+        logging.info(f"Finished sentiment analysis, result {result}")
+
+        return json.dumps(result)
+
+
 @workflow.defn
 class AnalyzeEmailWorkflow:
     @workflow.run
@@ -62,8 +74,18 @@ class AnalyzeEmailWorkflow:
             )
             json_data["email"] = email
 
-        return await workflow.execute_activity(
+        email_analysis = await workflow.execute_activity(
             AnalyzeEmailActivity.analyze_email,
             json.dumps(json_data),
             schedule_to_close_timeout=timedelta(seconds=10)
         )
+        sentiment_analysis = await workflow.execute_activity(
+            SentimentAnalysisActivity.analyze_sentiment,
+            json_data.get("email", ""),
+            schedule_to_close_timeout=timedelta(seconds=10)
+        )
+
+        result = json.loads(email_analysis)
+        result["sentiment"] = sentiment_analysis
+
+        return json.dumps(result)
