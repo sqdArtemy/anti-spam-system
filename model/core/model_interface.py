@@ -43,23 +43,26 @@ def tokenizer(text) -> list[str]:
 
 # Model
 class PhishingDetectorModel(nn.Module):
-    def __init__(self, input_size: int, hidden_size: int, hidden_size_2: int, output_size: int):
+    def __init__(self, input_size, hidden_size, hidden_size_2, output_size, dropout_rate):
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
+        self.hidden_size_2 = hidden_size_2
         self.output_size = output_size
-        self.layers = nn.ModuleList([
+        self.layers = nn.Sequential(
             nn.Linear(input_size, hidden_size),
             nn.ReLU(),
+            nn.BatchNorm1d(hidden_size),
+            nn.Dropout(p=dropout_rate),
             nn.Linear(hidden_size, hidden_size_2),
             nn.ReLU(),
+            nn.BatchNorm1d(hidden_size_2),
+            nn.Dropout(p=dropout_rate),
             nn.Linear(hidden_size_2, output_size)
-        ])
+        )
 
     def forward(self, x):
-        for layer in self.layers:
-            x = layer(x)
-        return x
+        return self.layers(x)
 
 
 # Core logic function that will serve like an interface
