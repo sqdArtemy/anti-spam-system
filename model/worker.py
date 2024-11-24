@@ -1,6 +1,9 @@
 import asyncio
 import os
 import logging
+import re
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
 from minio import Minio
 from temporalio.client import Client
 from temporalio.worker import Worker
