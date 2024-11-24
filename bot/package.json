@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx sequelize-cli db:migrate && ts-node-dev src/bot.ts"
+    "start:bot": "npx sequelize-cli db:migrate && ts-node-dev src/bot.ts"
   },
   "keywords": [],
   "author": "",
