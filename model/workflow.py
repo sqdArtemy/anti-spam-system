@@ -51,9 +51,10 @@ class SentimentAnalysisActivity:
     def __init__(self, analysis_model):
         self.analysis_model = analysis_model
 
+    @activity.defn
     async def analyze_sentiment(self, text: str) -> str:
         logging.info("Performing sentiment analysis.")
-        result = self.analysis_model(text)[0]
+        result = self.analysis_model(text, truncation=True)[0]
         logging.info(f"Finished sentiment analysis, result {result}")
 
         return json.dumps(result)
