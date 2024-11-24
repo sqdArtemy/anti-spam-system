@@ -17,17 +17,20 @@ with workflow.unsafe.imports_passed_through():
 
 nltk.download('stopwords')
 nltk.download('wordnet')
-device = "cuda" if torch.cuda.is_available() else "cpu"
+device = "cpu"
 
 
 def preprocess_text(text: str) -> str:
+    logging.info("Start preprocessing text.")
     lower_text = text.lower()
     text_without_links = re.sub(r'http\S+|www\S+|https\S+', '', lower_text, flags=re.MULTILINE)
     plain_text = re.sub(r'[^a-zA-Z\s]', '', text_without_links)
+    logging.info("Finish preprocessing text.")
     return plain_text
 
 
 def tokenizer(text: str) -> list[str]:
+    logging.info("Started tokenizing text.")
     lemmatizer = WordNetLemmatizer()
     tokens = re.findall(r'\b\w+\b', text)
 
@@ -35,6 +38,7 @@ def tokenizer(text: str) -> list[str]:
     tokens = [word for word in tokens if word not in stop_words]
 
     tokens = [lemmatizer.lemmatize(word) for word in tokens]
+    logging.info("Finished tokenizing text.")
     return tokens
 
 
@@ -67,10 +71,11 @@ class PhishingDetectorModel(nn.Module):
 def predict_email(
         email: str, model, vectorizer, top_n: int = 5
 ) -> str:
+
     logging.info("Start analyzing email.")
     model.eval()
+    model.cpu()
     time_before = time.time()
-
     # Vectorizing and transforming mail to a matrix
     logging.info("Transforming mail to tensor.")
     email_csrmatrix = vectorizer.transform([email])
@@ -88,7 +93,7 @@ def predict_email(
         first_layer_weights = model.layers[0].weight.data.cpu().numpy()
         suspicious_weights = first_layer_weights[1]
 
-        word_importance = email_tensor[0].cpu() * suspicious_weights
+        word_importance = email_tensor[0].cpu().numpy() * suspicious_weights
         important_words_indices = np.argsort(word_importance)[-top_n:]
 
         important_words = [vectorizer.get_feature_names_out()[i] for i in important_words_indices]
