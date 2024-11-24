@@ -9,6 +9,7 @@ from temporalio.client import Client
 from temporalio.worker import Worker
 from temporalio import workflow as wf
 from dotenv import load_dotenv
+from transformers import pipeline
 with wf.unsafe.imports_passed_through():
     import dill as pickle
     from core.model_interface import predict_email, preprocess_text, tokenizer
@@ -18,7 +19,9 @@ with wf.unsafe.imports_passed_through():
     with open("./core/model.pkl", "rb") as file:
         model = pickle.load(file)
 
-from workflow import AnalyzeEmailWorkflow, AnalyzeEmailActivity, ExtractTextActivity
+    sentiment_model = pipeline("sentiment-analysis")
+
+from workflow import AnalyzeEmailWorkflow, AnalyzeEmailActivity, ExtractTextActivity, SentimentAnalysisActivity
 
 
 async def main():
@@ -32,12 +35,18 @@ async def main():
 
     activity = AnalyzeEmailActivity(model=model, vectorizer=vectorizer)
     text_extract_activity = ExtractTextActivity(minio_client=minio_client)
+    sentiment_analysis_activity = SentimentAnalysisActivity(analysis_model=sentiment_model)
 
     worker = Worker(
         temporal_client,
         task_queue=os.getenv("TASK_QUEUE"),
         workflows=[AnalyzeEmailWorkflow],
-        activities=[activity.analyze_email, text_extract_activity.extract_text],
+        activities=[
+            activity.analyze_email,
+            text_extract_activity.extract_text,
+            sentiment_analysis_activity.analyze_sentiment,
+
+        ],
     )
 
     await worker.run()
