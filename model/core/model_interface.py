@@ -12,11 +12,12 @@ with workflow.unsafe.imports_passed_through():
     import nltk
     from torch import tensor
     from nltk.corpus import stopwords
-    from nltk.stem import PorterStemmer
+    from nltk.stem import WordNetLemmatizer
 
 
 nltk.download('stopwords')
-device = "cuda" if torch.cuda.is_available() else "cpu"
+nltk.download('wordnet')
+device = "cpu"
 
 
 def preprocess_text(text: str) -> str:
@@ -28,48 +29,53 @@ def preprocess_text(text: str) -> str:
     return plain_text
 
 
-def tokenizer(text) -> list[str]:
-    logging.info("Start tokenizing text.")
-    stemmer = PorterStemmer()
+def tokenizer(text: str) -> list[str]:
+    logging.info("Started tokenizing text.")
+    lemmatizer = WordNetLemmatizer()
     tokens = re.findall(r'\b\w+\b', text)
 
     stop_words = set(stopwords.words("english"))
     tokens = [word for word in tokens if word not in stop_words]
 
-    tokens = [stemmer.stem(word) for word in tokens]
-    logging.info("Finish tokenizing text.")
+    tokens = [lemmatizer.lemmatize(word) for word in tokens]
+    logging.info("Finished tokenizing text.")
     return tokens
 
 
 # Model
 class PhishingDetectorModel(nn.Module):
-    def __init__(self, input_size: int, hidden_size: int, hidden_size_2: int, output_size: int):
+    def __init__(self, input_size: int, hidden_size: int, hidden_size_2: int, output_size: int,
+                 dropout_rate: float) -> None:
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
+        self.hidden_size_2 = hidden_size_2
         self.output_size = output_size
-        self.layers = nn.ModuleList([
+        self.layers = nn.Sequential(
             nn.Linear(input_size, hidden_size),
             nn.ReLU(),
+            nn.BatchNorm1d(hidden_size),
+            nn.Dropout(p=dropout_rate),
             nn.Linear(hidden_size, hidden_size_2),
             nn.ReLU(),
+            nn.BatchNorm1d(hidden_size_2),
+            nn.Dropout(p=dropout_rate),
             nn.Linear(hidden_size_2, output_size)
-        ])
+        )
 
-    def forward(self, x):
-        for layer in self.layers:
-            x = layer(x)
-        return x
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.layers(x)
 
 
 # Core logic function that will serve like an interface
 def predict_email(
         email: str, model, vectorizer, top_n: int = 5
 ) -> str:
+
     logging.info("Start analyzing email.")
     model.eval()
+    model.cpu()
     time_before = time.time()
-
     # Vectorizing and transforming mail to a matrix
     logging.info("Transforming mail to tensor.")
     email_csrmatrix = vectorizer.transform([email])
@@ -87,7 +93,7 @@ def predict_email(
         first_layer_weights = model.layers[0].weight.data.cpu().numpy()
         suspicious_weights = first_layer_weights[1]
 
-        word_importance = email_tensor[0].cpu() * suspicious_weights
+        word_importance = email_tensor[0].cpu().numpy() * suspicious_weights
         important_words_indices = np.argsort(word_importance)[-top_n:]
 
         important_words = [vectorizer.get_feature_names_out()[i] for i in important_words_indices]
