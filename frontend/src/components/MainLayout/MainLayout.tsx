@@ -1,4 +1,4 @@
-import {Outlet} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import styles from './MainLayout.module.scss'
 import logo from '../../assets/logo.png'
 import {Avatar} from "@mui/material";
@@ -6,6 +6,7 @@ import {stringAvatar} from "../../utils.ts";
 
 
 const MainLayout = () => {
+    const navigate = useNavigate();
 
     return (
         <div className={styles.mainContainer}>
@@ -17,7 +18,17 @@ const MainLayout = () => {
                  <Avatar
                      {...stringAvatar(
                          `Test Test`
+                         ,
+                         {
+
+                             cursor: 'pointer'
+
+                         }
                      )}
+                     onClick={() => {
+                         navigate('/main/profile');
+                     }}
+
                  />
             </span>
             <div className={styles.contentContainer}>
