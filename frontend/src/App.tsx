@@ -7,6 +7,7 @@ import Home from "./components/Home/Home.tsx";
 import MainLayout from "./components/MainLayout/MainLayout.tsx";
 import Profile from "./components/Profile/Profile.tsx";
 import SpamChecker from "./components/SpamChecker/SpamChecker.tsx";
+import GameStart from "./components/GameStart/GameStart.tsx";
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
                     <Route path="home" element={<Home/>}/>
                     <Route path="profile" element={<Profile/>}/>
                     <Route path="spam-checker" element={<SpamChecker/>}/>
+                    <Route path="game" element={<GameStart/>}/>
                 </Route>
 
             </Routes>
