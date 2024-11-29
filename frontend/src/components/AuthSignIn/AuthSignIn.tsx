@@ -25,22 +25,19 @@ const AuthSignIn = observer(() => {
                     navigate('/main/home');
                 }
             } else if (userStore.state === 'loading') {
-                setError(''); // Clear the error message while loading
+                setError('');
             }
         });
     }, [navigate]);
 
-    // Handle form submission
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        // Validate email and password fields
         if (emailErrorText || !email || !password) return;
 
-        userStore.login(email, password); // Trigger login in userStore
+        userStore.login(email, password);
     };
 
-    // Handle email change and validate
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const emailValue = e.target.value;
         setEmail(emailValue);
@@ -117,7 +114,6 @@ const AuthSignIn = observer(() => {
                 </Button>
             </form>
 
-            {/* Sign Up Link */}
             <span className={styles.formBottomText}>
                 Don't have an account? <Link to="../sign-up" relative="path">Sign Up</Link>
             </span>
