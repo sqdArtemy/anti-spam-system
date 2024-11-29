@@ -35,7 +35,7 @@ function App() {
                     <Route path="home" element={<Home/>}/>
                     <Route path="profile" element={<Profile/>}/>
                     <Route path="spam-checker" element={<SpamChecker/>}/>
-                    <Route path="game" element={<GameFinal/>}/>
+                    <Route path="game" element={<GameStart/>}/>
                 </Route>
 
             </Routes>
