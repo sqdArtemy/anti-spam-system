@@ -11,6 +11,7 @@ import { GroupedCountResultItem } from "sequelize";
 import { ICommandService } from "../interfaces/services/commandService.interface";
 import { CommandService } from "./command.service";
 import { IAiModelResponse } from "../interfaces/aiModelResponse.interfance";
+import QuickChart from "quickchart-js";
 
 export class StatsService implements IStatsService {
   checkRequestRepo: ICheckRequestRepository;
@@ -146,6 +147,8 @@ export class StatsService implements IStatsService {
     const spammers = await this.checkRequestRepo.getTopSpammersByGroup(
       group?.id!,
     );
+
+    console.log(spammers);
     const details = await this.checkRequestRepo.getDetailsAboutSpammers(
       group?.id!,
     );
@@ -153,18 +156,17 @@ export class StatsService implements IStatsService {
     return { spammers, details };
   };
 
-  async createBarChart(
-    data: GroupedCountResultItem[],
-    mainLabelName: string,
-    rowLabelName: string,
+  private async createBarChart(
+      data: GroupedCountResultItem[],
+      mainLabelName: string,
+      rowLabelName: string
   ): Promise<Buffer> {
-    const chartCanvas = new ChartJSNodeCanvas({ width: 1000, height: 800 });
-
     const labels = data.map((item) => item[rowLabelName]);
     const counts = data.map((item) => item.count);
     const colors = this.generateColors(data.length);
 
-    const configuration = {
+    const chart = new QuickChart();
+    chart.setConfig({
       type: "bar",
       data: {
         labels: labels,
@@ -172,8 +174,8 @@ export class StatsService implements IStatsService {
           {
             label: mainLabelName,
             data: counts,
-            backgroundColor: colors, // Custom colors
-            borderColor: colors, // Border colors
+            backgroundColor: colors,
+            borderColor: colors,
             borderWidth: 1,
           },
         ],
@@ -182,12 +184,16 @@ export class StatsService implements IStatsService {
         scales: {
           y: {
             beginAtZero: true,
+            suggestedMin: 0
           },
         },
       },
-    };
+    });
+    chart.setWidth(1000).setHeight(800);
 
-    return chartCanvas.renderToBuffer(configuration as any);
+    // Fetch chart as a buffer
+    const chartBinary = await chart.toBinary();
+    return Buffer.from(chartBinary);
   }
 
   generateColors(count: number): string[] {
