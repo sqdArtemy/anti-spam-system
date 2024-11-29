@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import styles from './MainLayout.module.scss';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.svg';
 import { Avatar } from "@mui/material";
 import { stringAvatar } from "../../utils.ts";
 import gameIcon from '../../assets/game-icon.svg';

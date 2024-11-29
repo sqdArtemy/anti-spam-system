@@ -154,7 +154,6 @@ const SpamDetector = () => {
                 </Box>
             </Box>
         </Box>
-
     );
 };
 
