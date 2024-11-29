@@ -73,6 +73,9 @@ export class CheckRequestRepository implements ICheckRequestRepository {
         ],
         [Sequelize.literal('ROUND(AVG(confidence), 2)'), 'averageConfidence'],
       ],
+      where: {
+        isSus: true
+      }
     });
 
     return JSON.parse(JSON.stringify(data))[0] as unknown as { total: number; average: number; averageConfidence: number };
