@@ -8,6 +8,7 @@ import MainLayout from "./components/MainLayout/MainLayout.tsx";
 import Profile from "./components/Profile/Profile.tsx";
 import SpamChecker from "./components/SpamChecker/SpamChecker.tsx";
 import GameStart from "./components/GameStart/GameStart.tsx";
+import GameProcess from "./components/GameProcess/GameProcess.tsx";
 
 
 function App() {
