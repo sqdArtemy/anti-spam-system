@@ -4,7 +4,6 @@ FROM node:alpine
 RUN apk add --no-cache tzdata
 ENV TZ=Asia/Tashkent
 
-
 WORKDIR /app
 COPY package.json ./
 RUN rm -rf node_modules

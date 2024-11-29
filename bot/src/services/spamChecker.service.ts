@@ -43,6 +43,7 @@ export class SpamCheckerService implements ISpamCheckerService {
     const member = await this.tgMemberRepo.getById(tgMemberId);
     const group = await this.tgGroupRepo.getById(member?.tgGroupId!);
 
+    if(!group?.botEnabled) return;
     if (!spamResponse.is_suspicious) return;
     if (checkRequest.confidence >= group?.spamMinConfidence!) {
       await this.handleSpamMessage(ctx, member!, group!, checkRequest);
@@ -78,6 +79,7 @@ export class SpamCheckerService implements ISpamCheckerService {
     checkRequest?: CheckRequestModel,
   ) {
     if (member?.isWhitelisted) return;
+    if (!group.botEnabled) return;
 
     const updatedSusCounter = Number(member?.susCounter) + 1;
     await this.tgMemberRepo.updateMember(member.id!, {
@@ -158,6 +160,7 @@ export class SpamCheckerService implements ISpamCheckerService {
     );
     const group = await this.tgGroupRepo.getById(member?.tgGroupId!);
 
+    if(!group?.botEnabled) return;
     return await this.handleSpamMessage(ctx, member!, group!, checkRequest);
   };
 
