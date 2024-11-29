@@ -9,6 +9,7 @@ import Profile from "./components/Profile/Profile.tsx";
 import SpamChecker from "./components/SpamChecker/SpamChecker.tsx";
 import GameStart from "./components/GameStart/GameStart.tsx";
 import GameProcess from "./components/GameProcess/GameProcess.tsx";
+import GameFinal from "./components/GameFinal/GameFinal.tsx";
 
 
 function App() {
@@ -34,7 +35,7 @@ function App() {
                     <Route path="home" element={<Home/>}/>
                     <Route path="profile" element={<Profile/>}/>
                     <Route path="spam-checker" element={<SpamChecker/>}/>
-                    <Route path="game" element={<GameStart/>}/>
+                    <Route path="game" element={<GameFinal/>}/>
                 </Route>
 
             </Routes>
