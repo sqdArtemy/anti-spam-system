@@ -48,9 +48,10 @@
       left: 0;
       background-color: white;
       transition: width 0.3s ease;
+      max-width: 15vw;
 
       &:hover {
-        width: 12vw;
+        width: 15vw;
       }
 
       .sideBarItem {
@@ -59,8 +60,9 @@
         padding: 1rem;
         cursor: pointer;
         position: relative;
-        transition: background-color 1s ease; /* transition for background color */
+        transition: background-color 1s ease;
         border-radius: 1rem;
+        width: 100%;
 
         img {
           width: 2rem;
@@ -71,6 +73,7 @@
           margin-left: 1rem;
           font-size: 1rem;
           display: none;
+          white-space: nowrap;
         }
       }
 
@@ -82,26 +85,29 @@
         }
       }
 
-      /* Background color change with a transition effect */
+
       .gameIcon {
         &:hover {
           background-color: #FFE400;
         }
-        transition: background-color 1s ease; /* smooth transition when the cursor leaves */
+
+        transition: background-color 1s ease;
       }
 
       .faqIcon {
         &:hover {
           background-color: #00FF99;
         }
-        transition: background-color 1s ease; /* smooth transition when the cursor leaves */
+
+        transition: background-color 1s ease;
       }
 
       .spamDetectorIcon {
         &:hover {
           background-color: #FF885F;
         }
-        transition: background-color 1s ease; /* smooth transition when the cursor leaves */
+
+        transition: background-color 1s ease;
       }
     }
 
@@ -113,8 +119,8 @@
       transition: margin-left 0.3s ease, width 0.3s ease;
 
       .side-bar-container:hover + & {
-        margin-left: 12vw;
-        width: calc(100% - 12vw);
+        margin-left: 15vw;
+        width: calc(100% - 15vw);
       }
     }
   }
