@@ -6,7 +6,7 @@ import AuthSignIn from "./components/AuthSignIn/AuthSignIn.tsx";
 import Home from "./components/Home/Home.tsx";
 import MainLayout from "./components/MainLayout/MainLayout.tsx";
 import Profile from "./components/Profile/Profile.tsx";
-import SpamChecker from "./components/SpamChecker/SpamChecker.tsx";
+import SpamDetector from "./components/SpamDetector/SpamDetector.tsx";
 import GameStart from "./components/GameStart/GameStart.tsx";
 import GameProcess from "./components/GameProcess/GameProcess.tsx";
 import GameFinal from "./components/GameFinal/GameFinal.tsx";
@@ -34,7 +34,7 @@ function App() {
                     <Route index element={<Navigate to="home" replace/>}/>
                     <Route path="home" element={<Home/>}/>
                     <Route path="profile" element={<Profile/>}/>
-                    <Route path="spam-checker" element={<SpamChecker/>}/>
+                    <Route path="spam-detector" element={<SpamDetector/>}/>
                     <Route path="game" element={<GameStart/>}/>
                 </Route>
 

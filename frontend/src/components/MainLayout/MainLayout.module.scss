@@ -52,6 +52,57 @@
       &:hover {
         width: 12vw;
       }
+
+      .sideBarItem {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        cursor: pointer;
+        position: relative;
+        transition: background-color 1s ease; /* transition for background color */
+        border-radius: 1rem;
+
+        img {
+          width: 2rem;
+          height: 2rem;
+        }
+
+        .iconLabel {
+          margin-left: 1rem;
+          font-size: 1rem;
+          display: none;
+        }
+      }
+
+      &:hover {
+        .sideBarItem {
+          .iconLabel {
+            display: inline-block;
+          }
+        }
+      }
+
+      /* Background color change with a transition effect */
+      .gameIcon {
+        &:hover {
+          background-color: #FFE400;
+        }
+        transition: background-color 1s ease; /* smooth transition when the cursor leaves */
+      }
+
+      .faqIcon {
+        &:hover {
+          background-color: #00FF99;
+        }
+        transition: background-color 1s ease; /* smooth transition when the cursor leaves */
+      }
+
+      .spamDetectorIcon {
+        &:hover {
+          background-color: #FF885F;
+        }
+        transition: background-color 1s ease; /* smooth transition when the cursor leaves */
+      }
     }
 
     .main-content-container {

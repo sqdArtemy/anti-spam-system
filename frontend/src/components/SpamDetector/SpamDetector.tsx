@@ -8,14 +8,13 @@ import {
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 
-const SpamChecker = () => {
+const SpamDetector = () => {
     return (
         <Box
             sx={{
                 display: "flex",
                 justifyContent: "center",
                 p: 4,
-                backgroundColor: "#f9f9f9",
                 minHeight: "100%",
             }}
         >
@@ -38,14 +37,14 @@ const SpamChecker = () => {
                         textAlign: "left",
                     }}
                 >
-                    Spam Checker
+                    Spam Detector
                 </Typography>
 
 
                 <Box
                     sx={{
                         display: "flex",
-                        flexDirection: { xs: "column", md: "row" },
+                        flexDirection: {xs: "column", md: "row"},
                         gap: 2,
                         mt: 4,
                         width: "100%",
@@ -78,14 +77,14 @@ const SpamChecker = () => {
                             }}
                         >
                             <Button
-                                startIcon={<ContentPasteIcon />}
+                                startIcon={<ContentPasteIcon/>}
                                 variant="outlined"
                                 color="primary"
                             >
                                 Paste Text
                             </Button>
                             <Button
-                                startIcon={<FileUploadIcon />}
+                                startIcon={<FileUploadIcon/>}
                                 variant="outlined"
                                 color="primary"
                             >
@@ -95,7 +94,7 @@ const SpamChecker = () => {
                         <Typography
                             variant="body2"
                             color="text.secondary"
-                            sx={{ textAlign: "right", mt: 2 }}
+                            sx={{textAlign: "right", mt: 2}}
                         >
                             Word Count: 0/1000
                         </Typography>
@@ -109,10 +108,10 @@ const SpamChecker = () => {
                             p: 3,
                         }}
                     >
-                        <Typography variant="body1" fontWeight="bold" sx={{ mb: 2 }}>
+                        <Typography variant="body1" fontWeight="bold" sx={{mb: 2}}>
                             Likelihood of spam:
                         </Typography>
-                        <Typography variant="body2" sx={{ mb: 2 }}>
+                        <Typography variant="body2" sx={{mb: 2}}>
                             List
                         </Typography>
                         <Box
@@ -146,6 +145,7 @@ const SpamChecker = () => {
                             "&:hover": {
                                 backgroundColor: "#0039b3",
                             },
+                            width: "200px"
                         }}
                     >
                         Check
@@ -157,4 +157,4 @@ const SpamChecker = () => {
     );
 };
 
-export default SpamChecker;
+export default SpamDetector;
