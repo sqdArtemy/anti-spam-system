@@ -22,7 +22,7 @@ const SpamDetector = () => {
             <Box
                 sx={{
                     width: "100%",
-                    maxWidth: 900,
+                    maxWidth: 1200,
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
@@ -35,6 +35,7 @@ const SpamDetector = () => {
                     gutterBottom
                     sx={{
                         textAlign: "left",
+                        margin: 0
                     }}
                 >
                     Spam Detector
@@ -134,7 +135,7 @@ const SpamDetector = () => {
 
                         bottom: 0,
                         right: 0,
-                        p: 2,
+                        marginTop: '1.5rem'
                     }}
                 >
                     <Button
