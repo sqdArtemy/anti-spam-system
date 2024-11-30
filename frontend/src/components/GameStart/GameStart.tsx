@@ -1,15 +1,36 @@
-import {useState} from "react";
+import {useEffect, useState} from 'react';
 import {Box, Typography, Button, Card, CardContent, List, ListItem, LinearProgress, Stack} from "@mui/material";
+import {observer} from 'mobx-react';
+import gameStore from '../../stores/GameStore'; // Ensure the path to your GameStore is correct
+import {autorun} from 'mobx';
+import {ITopPlayer} from "../../api/interfaces/responses/game.ts";
+import {useNavigate} from "react-router-dom";
 
-const GameStart = () => {
+const GameStart = observer(() => {
     const [gameStarted, setGameStarted] = useState(false);
+    const navigate = useNavigate();
 
-    const topPlayers = [
-        {rank: 1, name: "Top G", accuracy: 95},
-        {rank: 2, name: "PNG Lover", accuracy: 90},
-        {rank: 3, name: "P Destroyer", accuracy: 87},
-        {rank: 4, name: "Master", accuracy: 80},
-    ];
+    useEffect(() => {
+        autorun(() => {
+            if (gameStore.state === 'success' && gameStore.data.gameId !== -1) {
+                console.log("Game Initialized: ", gameStore.data.gameId);
+                navigate('/main/game/process');
+            } else if (gameStore.state === 'error') {
+                console.error("Error: ", gameStore.errorMsg);
+            }
+
+        });
+    }, []);
+
+
+    const handleStartButton = () => {
+        setGameStarted(true);
+    }
+
+    const handleStartGame = (quantity: number) => {
+
+        gameStore.initGame(quantity);
+    };
 
     return (
         <Box
@@ -27,6 +48,7 @@ const GameStart = () => {
                 spacing={4}
                 sx={{width: "100%", maxWidth: "1400px"}}
             >
+                {/* Spam and Normal Letter Cards */}
                 <Stack
                     direction={{xs: "column", sm: "row"}}
                     spacing={2}
@@ -36,13 +58,14 @@ const GameStart = () => {
                         alignItems: "center",
                     }}
                 >
+                    {/* Spam Letter Card */}
                     <Card
                         variant="outlined"
                         sx={{
                             borderColor: "red",
                             width: "100%",
                             maxWidth: 500,
-                            height: "500px",
+                            height: "550px",
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "flex-start",
@@ -62,13 +85,14 @@ const GameStart = () => {
                         </CardContent>
                     </Card>
 
+                    {/* Normal Letter Card */}
                     <Card
                         variant="outlined"
                         sx={{
                             borderColor: "green",
                             width: "100%",
                             maxWidth: 500,
-                            height: "500px",
+                            height: "550px",
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "flex-start",
@@ -89,13 +113,14 @@ const GameStart = () => {
                     </Card>
                 </Stack>
 
+                {/* Top 10 Players Card */}
                 <Card
                     variant="outlined"
                     sx={{
                         borderColor: "gold",
                         width: "100%",
-                        maxWidth: 400,
-                        height: "500px",
+                        maxWidth: 450,
+                        height: "550px",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "flex-start",
@@ -108,9 +133,9 @@ const GameStart = () => {
                             🏆 TOP 10 Players
                         </Typography>
                         <List sx={{width: "100%", padding: 0, marginTop: 3}}>
-                            {topPlayers.map((player) => (
+                            {gameStore.topPlayers!.map((player: ITopPlayer, index) => (
                                 <ListItem
-                                    key={player.rank}
+                                    key={player.userName}
                                     sx={{
                                         display: "flex",
                                         alignItems: "center",
@@ -119,18 +144,18 @@ const GameStart = () => {
                                     }}
                                 >
                                     <Typography variant="body1" sx={{minWidth: 50}}>
-                                        {player.rank}st
+                                        {index + 1}
                                     </Typography>
                                     <Typography variant="body1" sx={{flexGrow: 1}}>
-                                        {player.name}
+                                        {player.userName}
                                     </Typography>
                                     <LinearProgress
                                         variant="determinate"
-                                        value={player.accuracy}
+                                        value={player.scorePercentage}
                                         sx={{width: 125, marginLeft: 2, marginRight: 2}}
                                     />
                                     <Typography variant="body2" sx={{minWidth: 50}}>
-                                        {player.accuracy}%
+                                        {player.scorePercentage}%
                                     </Typography>
                                 </ListItem>
                             ))}
@@ -138,6 +163,8 @@ const GameStart = () => {
                     </CardContent>
                 </Card>
             </Stack>
+
+            {/* Start Game Button */}
             <Box sx={{textAlign: "center", marginTop: 4}}>
                 {!gameStarted ? (
                     <Button
@@ -146,19 +173,22 @@ const GameStart = () => {
                         size="large"
                         fullWidth
                         sx={{width: "300px"}}
-                        onClick={() => setGameStarted(true)}
+                        onClick={() => handleStartButton()} // Example: start game with 5 letters
                     >
                         Start game
                     </Button>
                 ) : (
-                    <Stack direction="row" spacing={2} sx={{justifyContent: "center"}}>
-                        <Button variant="contained" color="success" size="large">
+                    <Stack direction="row" spacing={2} sx={{justifyContent: "center", width: "500px"}}>
+                        <Button variant="contained" color="success" size="large" fullWidth
+                                onClick={() => handleStartGame(5)}>
                             5 Letters
                         </Button>
-                        <Button variant="contained" color="warning" size="large">
+                        <Button variant="contained" color="warning" size="large" fullWidth
+                                onClick={() => handleStartGame(10)}>
                             10 Letters
                         </Button>
-                        <Button variant="contained" color="error" size="large">
+                        <Button variant="contained" color="error" size="large" fullWidth
+                                onClick={() => handleStartGame(15)}>
                             15 Letters
                         </Button>
                     </Stack>
@@ -166,6 +196,6 @@ const GameStart = () => {
             </Box>
         </Box>
     );
-};
+});
 
 export default GameStart;

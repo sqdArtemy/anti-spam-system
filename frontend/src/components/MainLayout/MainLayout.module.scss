@@ -49,6 +49,7 @@
       background-color: white;
       transition: width 0.3s ease;
       max-width: 15vw;
+      z-index: 9999;
 
       &:hover {
         width: 15vw;

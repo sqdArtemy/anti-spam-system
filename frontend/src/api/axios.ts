@@ -9,7 +9,7 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
     function (config) {
         config.data = camelToSnake(config.data);
-        config.headers['Content-Type'] = 'multipart/form-data';
+        // config.headers['Content-Type'] = 'multipart/form-data';
 
         const token = localStorage.getItem('accessToken'); //getTokenFromSomewhere();
         if (

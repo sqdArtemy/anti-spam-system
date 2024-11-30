@@ -35,7 +35,13 @@ function App() {
                     <Route path="home" element={<Home/>}/>
                     <Route path="profile" element={<Profile/>}/>
                     <Route path="spam-detector" element={<SpamDetector/>}/>
-                    <Route path="game" element={<GameStart/>}/>
+
+                    <Route path="game/*">
+                        <Route path="start" element={<GameStart/>}/>
+                        <Route path="process" element={<GameProcess/>}/>
+                        <Route path="finish" element={<GameFinal/>}/>
+                    </Route>
+
                 </Route>
 
             </Routes>
