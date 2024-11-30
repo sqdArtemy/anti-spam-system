@@ -135,7 +135,6 @@ class TopPlayersView(Resource):
     @jwt_required(optional=True)
     def get(self):
         try:
-            # Query top players
             top_players = (
                 db.session.query(
                     User.name.label("user_name"),
@@ -143,7 +142,8 @@ class TopPlayersView(Resource):
                     (Game.user_score / Game.rounds * 100).label("score_percentage")
                 )
                 .join(Game, Game.user_id == User.id)
-                .order_by(Game.user_score.desc())
+                .filter(Game.rounds > 0)
+                .order_by(((Game.user_score / Game.rounds) * 100).desc())
                 .limit(10)
                 .all()
             )
@@ -158,7 +158,6 @@ class TopPlayersView(Resource):
                 for player in top_players
             ]
 
-            # Return as a JSON-serializable dictionary
             return {"top_players": top_players_list}, 200
 
         except Exception as e:
