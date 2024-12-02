@@ -76,7 +76,10 @@ const GameFinal = observer(() => {
                     }}
                 >
                     <Typography variant="h5" fontWeight="bold">
-                        Score: {gameStore.finishData?.score || 0}
+                        Final Score: {gameStore.finishData?.score || 0}
+                    </Typography>
+                    <Typography variant="h5" fontWeight="bold">
+                        Spent Time: {gameStore.finishData?.maxTime || 0} seconds
                     </Typography>
                 </Box>
 

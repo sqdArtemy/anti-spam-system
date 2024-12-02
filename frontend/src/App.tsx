@@ -37,6 +37,7 @@ function App() {
                     <Route path="spam-detector" element={<SpamDetector/>}/>
 
                     <Route path="game/*">
+                        <Route index element={<Navigate to="start" replace/>}/>
                         <Route path="start" element={<GameStart/>}/>
                         <Route path="process" element={<GameProcess/>}/>
                         <Route path="finish" element={<GameFinal/>}/>

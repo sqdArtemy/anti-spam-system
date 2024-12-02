@@ -129,8 +129,8 @@ const GameProcess = observer(() => {
                         width: "100%",
                         maxWidth: "600px",
                         boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-                        maxHeight: "550px",
-                        height: "550px",
+                        maxHeight: "500px",
+                        height: "500px",
                         overflowY: "auto"
                     }}>
                         <Typography variant="body1">{currentLetter.input}</Typography>
