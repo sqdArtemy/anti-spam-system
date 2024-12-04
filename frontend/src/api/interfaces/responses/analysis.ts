@@ -1,6 +1,6 @@
 import {IUserResponse} from '../responses/user';
 
-interface SentimentAnalysis {
+export interface SentimentAnalysis {
     label: string;
     score: number;
 }
@@ -17,7 +17,7 @@ export interface IAnalysisResponse {
         confidence: number;
         importantWords: ImportantWords;
         timeTaken: number;
-        sentiment: SentimentAnalysis;
+        sentiment: SentimentAnalysis | string;
     };
     isSus: boolean;
     confidence: number;

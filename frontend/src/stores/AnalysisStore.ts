@@ -15,6 +15,7 @@ class AnalysisStore {
 
     // Getters and Setters
     set analysisData(data: IAnalysisResponse) {
+
         this._analysisData = data;
     }
 
@@ -41,6 +42,14 @@ class AnalysisStore {
 
 
     analyzeSuccess = ({data}: AxiosResponse<IAnalysisResponse>) => {
+        if (typeof data.output.sentiment === "string") {
+            try {
+                data.output.sentiment = JSON.parse(data.output.sentiment);
+            } catch (error) {
+                console.error("Failed to parse sentiment JSON:", error);
+            }
+        }
+
         this.analysisData = data;
         this.currentState = 'success';
         // this.previewImage(data.image_path);

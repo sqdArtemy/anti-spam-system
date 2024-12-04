@@ -11,7 +11,8 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import {observer} from "mobx-react";
 import {autorun} from "mobx";
-import analysisStore from "../../stores/AnalysisStore"; // Ensure this import path is correct
+import analysisStore from "../../stores/AnalysisStore";
+import {SentimentAnalysis} from "../../api/interfaces/responses/analysis.ts"; // Ensure this import path is correct
 
 interface ImportantWords {
     [key: string]: number;
@@ -64,7 +65,7 @@ const SpamDetector = observer(() => {
         };
 
 
-        const getConfidenceColor = (confidence: number) => {
+        const getProgressColor = (confidence: number) => {
             if (confidence > 80) return "#d32f2f";
             if (confidence > 50) return "#fbc02d";
             return "#388e3c";
@@ -124,8 +125,8 @@ const SpamDetector = observer(() => {
                                         value={text}
                                         onChange={handleTextChange}
                                         sx={{
-                                            height: 325,              // Set the fixed height
-                                            overflow: "auto",         // Ensure scrolling when content exceeds height
+                                            height: 325,
+                                            overflow: "auto",
                                         }}
                                     />
 
@@ -192,32 +193,120 @@ const SpamDetector = observer(() => {
                             ) : analysisStore.state === "error" ? (
                                 <Typography variant="body2">Error occurred. Try again.</Typography>
                             ) : (
-                                <Box sx={{
-                                    position: "relative",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center"
-                                }}>
-                                    <CircularProgress
-                                        variant="determinate"
-                                        value={confidence}
-                                        size={250}
+                                <Box
+                                    sx={{
+                                        position: "relative",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <Box
                                         sx={{
-                                            color: getConfidenceColor(confidence),
+                                            position: "relative",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            mb: 4,
                                         }}
-                                    />
-                                    <Typography variant="h4" sx={{
-                                        position: "absolute",
-                                        fontWeight: "bold",
-                                        color: getConfidenceColor(confidence),
-                                        fontSize: "3rem",
-                                        top: "50%",
-                                        left: "50%",
-                                        transform: "translate(-50%, -50%)",
-                                    }}>
-                                        {confidence.toFixed(2)}%
-                                    </Typography>
+                                    >
+                                        <CircularProgress
+                                            variant="determinate"
+                                            value={confidence}
+                                            size={250}
+                                            sx={{
+                                                color: getProgressColor(confidence),
+                                            }}
+                                        />
+                                        <Typography
+                                            variant="h4"
+                                            sx={{
+                                                position: "absolute",
+                                                fontWeight: "bold",
+                                                color: getProgressColor(confidence),
+                                                fontSize: "3rem",
+                                                top: "50%",
+                                                left: "50%",
+                                                transform: "translate(-50%, -50%)",
+                                            }}
+                                        >
+                                            {confidence.toFixed(2)}%
+                                        </Typography>
+                                    </Box>
+
+                                    {analysisStore.state === "success" && (
+                                        <Box
+                                            sx={{
+                                                width: "100%",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "center",
+                                                px: 4,
+                                            }}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "space-between",
+                                                    width: "100%",
+                                                }}
+                                            >
+                                                <Typography
+                                                    variant="body1"
+                                                    fontWeight="bold"
+                                                    sx={{whiteSpace: "nowrap"}}
+                                                >
+                                                    Sentiment: {(analysisStore._analysisData.output.sentiment as SentimentAnalysis).label}
+                                                </Typography>
+                                                <Box sx={{flex: 1, ml: 2}}>
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            gap: 1,
+                                                        }}
+                                                    >
+                                                        <Box
+                                                            sx={{
+                                                                flex: 1,
+                                                                height: 10,
+                                                                bgcolor: "#e0e0e0",
+                                                                borderRadius: 2,
+                                                                position: "relative",
+                                                                overflow: "hidden",
+                                                            }}
+                                                        >
+                                                            <Box
+                                                                sx={{
+                                                                    width: `${(analysisStore._analysisData.output.sentiment as SentimentAnalysis).score * 100}%`,
+                                                                    height: "100%",
+                                                                    bgcolor: getProgressColor(
+                                                                        (analysisStore._analysisData.output.sentiment as SentimentAnalysis).score * 100
+                                                                    ),
+                                                                }}
+                                                            />
+
+                                                        </Box>
+                                                        <Typography
+                                                            variant="body2"
+                                                            fontWeight="bold"
+                                                            color="text.secondary"
+                                                        >
+                                                            {(
+                                                                (analysisStore._analysisData.output.sentiment as SentimentAnalysis).score *
+                                                                100
+                                                            ).toFixed(2)}
+                                                            %
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                    )}
                                 </Box>
+
                             )}
                         </Paper>
                     </Box>
