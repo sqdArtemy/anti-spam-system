@@ -11,67 +11,76 @@
 .inner-container {
   width: 40vw;
   min-height: 65vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-
 .form-container {
-  width: 40vw;
+  width: 100%; /* Ensure form takes up full available width within the container */
+  max-width: 25rem; /* Restrict max-width to make sure it stays reasonable */
   min-height: 65vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
-
-  .form-header-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
-
-    .form-header-text {
-      font-size: 2.5rem;
-      font-weight: 700;
-      word-break: break-word;
-      width: 25rem;
-      text-align: center;
-    }
-
-    .form-header-desc {
-      font-size: 1.2rem;
-
-    }
-
-  }
-
-  input {
-    width: 25rem;
-  }
-
-  button {
-    width: 27rem;
-  }
-
-  .form-bottom-text {
-    font-size: 1.2rem;
-    text-align: center;
-    width: 25rem;
-
-    a {
-      color: rgba(5, 84, 202, 0.932);
-      cursor: pointer;
-      text-decoration: none;
-      transition: color 0.3s ease-in-out;
-      font-weight: 400;
-    }
-
-    a:hover {
-      color: rgba(3, 14, 109, 0.892);
-    }
-
-
-  }
-
+  padding: 1rem; /* Optional padding to avoid touching edges */
 }
 
+.form-header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+
+  .form-header-text {
+    font-size: 2.5rem;
+    font-weight: 700;
+    word-break: break-word;
+    width: 100%; /* Ensure the text can span the full width */
+    text-align: center;
+  }
+
+  .form-header-desc {
+    font-size: 1.2rem;
+    text-align: center; /* Make sure the description text is centered */
+  }
+}
+
+input {
+  width: 100%; /* Ensure input fields take up full width available */
+  max-width: 25rem; /* Restrict to max width for uniformity */
+}
+
+button {
+  width: 100%; /* Button takes up full width of the container */
+  max-width: 27rem;
+}
+
+.form-bottom-text {
+  font-size: 1.2rem;
+  text-align: center;
+  width: 100%;
+  max-width: 25rem; /* Restrict to max width */
+}
+
+.form-bottom-text a {
+  color: rgba(5, 84, 202, 0.932);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+  font-weight: 400;
+}
+
+.form-bottom-text a:hover {
+  color: rgba(3, 14, 109, 0.892);
+}
+
+.form-error {
+  color: red;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  text-align: left;
+}

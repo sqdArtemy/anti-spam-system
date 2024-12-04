@@ -30,7 +30,6 @@
         font-size: 1.5rem;
         font-weight: bold;
         margin-left: 1rem;
-
       }
     }
   }
@@ -48,13 +47,82 @@
       top: 10vh;
       left: 0;
       background-color: white;
+      transition: width 0.3s ease;
+      max-width: 15vw;
+      z-index: 9999;
+
+      &:hover {
+        width: 15vw;
+      }
+
+      .sideBarItem {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        cursor: pointer;
+        position: relative;
+        transition: background-color 1s ease;
+        border-radius: 1rem;
+        width: 100%;
+
+        img {
+          width: 2rem;
+          height: 2rem;
+        }
+
+        .iconLabel {
+          margin-left: 1rem;
+          font-size: 1rem;
+          display: none;
+          white-space: nowrap;
+        }
+      }
+
+      &:hover {
+        .sideBarItem {
+          .iconLabel {
+            display: inline-block;
+          }
+        }
+      }
+
+
+      .gameIcon {
+        &:hover {
+          background-color: #FFE400;
+        }
+
+        transition: background-color 1s ease;
+      }
+
+      .faqIcon {
+        &:hover {
+          background-color: #00FF99;
+        }
+
+        transition: background-color 1s ease;
+      }
+
+      .spamDetectorIcon {
+        &:hover {
+          background-color: #FF885F;
+        }
+
+        transition: background-color 1s ease;
+      }
     }
 
     .main-content-container {
       margin-left: 5vw;
-      width: 95vw;
+      width: calc(100% - 5vw);
       padding: 1rem;
       min-height: 90vh;
+      transition: margin-left 0.3s ease, width 0.3s ease;
+
+      .side-bar-container:hover + & {
+        margin-left: 15vw;
+        width: calc(100% - 15vw);
+      }
     }
   }
 }

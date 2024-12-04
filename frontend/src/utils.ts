@@ -1,3 +1,5 @@
+import {SxProps} from "@mui/material";
+
 function stringToColor(string: string) {
     let hash = 0;
     let i;
@@ -12,7 +14,9 @@ function stringToColor(string: string) {
     return color;
 }
 
-export function stringAvatar(name: string) {
+export function stringAvatar(name: string, sx: SxProps = {})  {
+
+
     let initials: string | string[] = name
         .split(' ')
         .map((word) => word[0])
@@ -35,6 +39,7 @@ export function stringAvatar(name: string) {
             bgcolor: stringToColor(name),
             width: '3.5rem',
             height: '3.5rem',
+            ...sx
         },
         children: initials,
     };
