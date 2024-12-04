@@ -16,8 +16,7 @@ from utilities.workflow_client import WorkflowClient
 parser = reqparse.RequestParser()
 parser.add_argument("text", location="form")
 parser.add_argument("image", type=lambda x: x, location="files")
-parser.add_argument("word_number", type=int, default=10, location="form")
-
+parser.add_argument("word_number", type=int, default=5, location="form")
 
 class AnalyzeAPI(Resource):
     check_request_create_schema = CheckRequestCreateSchema()
@@ -42,13 +41,21 @@ class AnalyzeAPI(Resource):
         email_content = text or None
         image_path = None
 
+        if input_type == "text":
+            word_count = len(text.split())
+
+            if word_count < 10:
+                word_number = 1
+            else:
+                word_number = min(max(2, word_count // 10), 12)
+
         if input_type == "image":
             image_path = minio_service.upload_image(image)
 
         payload = {
             "email": email_content,
             "image_path": image_path,
-            "words_number": word_number
+            "words_number": word_number if word_number else 5
         }
 
         try:
