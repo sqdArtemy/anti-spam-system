@@ -36,7 +36,7 @@ async def start_workflow():
 
     result_2 = await client.execute_workflow(
         AnalyzeEmailWorkflow.run,
-        json.dumps({'email': '', 'image_path': 'images/test_2.png', 'words_number': 10}),
+        json.dumps({'email': '', 'image_path': 'images/1.png', 'words_number': 10}),
         id="analyze-email-workflow-id",
         task_queue=os.getenv('TASK_QUEUE'),
     )
