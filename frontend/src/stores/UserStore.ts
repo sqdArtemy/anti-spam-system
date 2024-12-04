@@ -11,6 +11,7 @@ type CurrentUserData = ILoginResponse['user'];
 class UserStore {
     storeData: CurrentUserData = {} as CurrentUserData;
     state: 'pending' | 'loading' | 'success' | 'error' = 'pending';
+    layoutState: 'pending' | 'loading' | 'success' | 'error' = 'pending';
     errorMessage: string = '';
 
     constructor() {
@@ -22,7 +23,7 @@ class UserStore {
     }
 
     get data(): CurrentUserData {
-        if (isNaN(this.storeData?.id)) {
+        if (!this.storeData?.name) {
             this.fetchCurrentUser();
         }
         return this.storeData;
@@ -61,10 +62,12 @@ class UserStore {
     fetchCurrentUserSuccess = ({data}: AxiosResponse<IUserResponse>) => {
         this.data = {...this.storeData, ...data};
         this.currentState = 'success';
+        this.layoutState = 'success';
     };
 
     fetchCurrentUserFailure = ({response}: AxiosError<string>) => {
         this.currentState = 'error';
+        this.layoutState = 'error';
         this.errorMsg = response?.data || 'Something went wrong';
     };
 

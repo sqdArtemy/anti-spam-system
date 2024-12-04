@@ -6,9 +6,36 @@ import {stringAvatar} from "../../utils.ts";
 import gameIcon from '../../assets/game-icon.svg';
 import faqIcon from '../../assets/faq-icon.svg';
 import spamDetectorIcon from '../../assets/spam-detector-icon.svg';
+import userStore from "../../stores/UserStore.ts";
+import {useEffect, useState} from "react";
+import {autorun} from "mobx";
 
 const MainLayout = () => {
     const navigate = useNavigate();
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [userName, setUserName] = useState(userStore.storeData.name || '');
+
+    useEffect(() => {
+        userStore.fetchCurrentUser();
+        const dispose = autorun(() => {
+            if (userStore.layoutState === 'error') {
+                setError(userStore.errorMsg);
+                setLoading(false);
+                userStore.currentState = 'pending';
+            } else if (userStore.layoutState === 'success') {
+                setUserName(userStore.data.name);
+                setLoading(false);
+                userStore.currentState = 'pending';
+            } else if (userStore.layoutState === 'loading') {
+                setError('');
+                setLoading(true);
+                userStore.currentState = 'pending';
+            }
+        });
+
+        return () => dispose();
+    }, []);
 
     return (
         <div className={styles.mainContainer}>
@@ -19,7 +46,7 @@ const MainLayout = () => {
                 </span>
                 <Avatar
                     {...stringAvatar(
-                        `Test Test`,
+                        userName || '',
                         {
                             cursor: 'pointer'
                         }
