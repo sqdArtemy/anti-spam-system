@@ -18,14 +18,12 @@ class AnalyzeEmailActivity:
     async def analyze_email(self, data: str) -> str:
         json_data = json.loads(data)
         email = json_data.get("email")
-        words_number = int(json_data.get("words_number"))
 
         logging.info(f"Analyzing email: {email}")
         result = predict_email(
             email=email,
             model=self.model,
             vectorizer=self.vectorizer,
-            top_n=words_number
         )
         logging.info(f"Analysis result: {result}")
 
@@ -88,5 +86,6 @@ class AnalyzeEmailWorkflow:
 
         result = json.loads(email_analysis)
         result["sentiment"] = sentiment_analysis
+        result["text"] = json_data["email"]
 
         return json.dumps(result)

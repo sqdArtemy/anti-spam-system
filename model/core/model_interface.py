@@ -69,13 +69,14 @@ class PhishingDetectorModel(nn.Module):
 
 # Core logic function that will serve like an interface
 def predict_email(
-        email: str, model, vectorizer, top_n: int = 5
+        email: str, model, vectorizer
 ) -> str:
 
     logging.info("Start analyzing email.")
     model.eval()
     model.cpu()
     time_before = time.time()
+
     # Vectorizing and transforming mail to a matrix
     logging.info("Transforming mail to tensor.")
     email_csrmatrix = vectorizer.transform([email])
@@ -83,6 +84,12 @@ def predict_email(
     indices = tensor(np.array([email_coomatrix.row, email_coomatrix.col])).to(device)
     values = tensor(email_coomatrix.data, dtype=torch.float32).to(device)
     email_tensor = torch.sparse_coo_tensor(indices, values, torch.Size(email_coomatrix.shape)).to_dense().to(device)
+
+    words_count = len(email.split(' '))
+    if words_count < 10:
+        top_n_words = 1
+    else:
+        top_n_words = min(max(2, words_count // 2), 12)
 
     with torch.no_grad():
         logging.info("Predicting email by using model.")
@@ -94,7 +101,7 @@ def predict_email(
         suspicious_weights = first_layer_weights[1]
 
         word_importance = email_tensor[0].cpu().numpy() * suspicious_weights
-        important_words_indices = np.argsort(word_importance)[-top_n:]
+        important_words_indices = np.argsort(word_importance)[-top_n_words:]
 
         important_words = [vectorizer.get_feature_names_out()[i] for i in important_words_indices]
         important_scores = [word_importance[i] for i in important_words_indices]
