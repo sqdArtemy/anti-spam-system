@@ -110,27 +110,27 @@ services:
       - 3307:3306
     volumes:
       - /var/lib/mysql:/var/lib/mysql
-#  bot-app:
-#    container_name: bot-app
-#    build:
-#      context: ../bot
-#      dockerfile: Dockerfile
-#    environment:
-#      - DB_USER=${DB_USER}
-#      - DB_HOST=${DB_HOST}
-#      - DB_PASSWORD=${DB_PASSWORD}
-#      - DB_NAME=${DB_NAME}
-#      - TG_BOT_TOKEN=${TG_BOT_TOKEN}
-#      - WORKER_ADDRESS=${WORKER_ADDRESS}
-#      - TASK_QUEUE=${TASK_QUEUE}
-#    depends_on:
-#      - mysql
-#    networks:
-#      - anti-spam-network
-#    ports:
-#      - 3003:3003
-#    volumes:
-#      - ../bot:/app
+  bot-app:
+    container_name: bot-app
+    build:
+      context: ../bot
+      dockerfile: Dockerfile
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_HOST=${DB_HOST}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - TG_BOT_TOKEN=${TG_BOT_TOKEN}
+      - WORKER_ADDRESS=${WORKER_ADDRESS}
+      - TASK_QUEUE=${TASK_QUEUE}
+    depends_on:
+      - mysql
+    networks:
+      - anti-spam-network
+    ports:
+      - 3003:3003
+    volumes:
+      - ../bot:/app
 
 
 volumes:
