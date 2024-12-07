@@ -79,6 +79,8 @@ const SpamDetector = observer(() => {
         : 0;
 
     const highlightText = (inputText: string, importantWords: ImportantWords) => {
+        setImagePreview(null);
+
         const regex = new RegExp(`\\b(${Object.keys(importantWords).join("|")})\\b`, "gi");
 
         return inputText.split(regex).map((part, index) => {
@@ -97,13 +99,16 @@ const SpamDetector = observer(() => {
         ? analysisStore._analysisData.output.importantWords
         : {};
 
+    const inputText = analysisStore.state === "success"
+        ? analysisStore._analysisData.input
+        : text;
+
     return (
-        <Box sx={{display: "flex", justifyContent: "center", p: 4, minHeight: "100%"}}>
+        <Box sx={{display: "flex", justifyContent: "center", p: 4, minHeight: "100%", alignItems: 'center'}}>
             <Box sx={{width: "100%", maxWidth: 1200, display: "flex", flexDirection: "column", position: "relative"}}>
                 <Typography variant="h4" fontWeight="bold" gutterBottom sx={{textAlign: "left", margin: 0}}>
                     Spam Detector
                 </Typography>
-
                 <Box
                     sx={{
                         display: "flex",
@@ -157,7 +162,7 @@ const SpamDetector = observer(() => {
                                 }}
                             />
                         )}
-                        {analysisStore.state === "success" && !imagePreview && (
+                        {analysisStore.state === "success" && (
                             <Box
                                 sx={{
                                     mt: 2,
@@ -168,7 +173,7 @@ const SpamDetector = observer(() => {
                                     overflowY: "auto",
                                 }}
                             >
-                                {highlightText(text, importantWords)}
+                                {highlightText(inputText, importantWords)}
                             </Box>
                         )}
                         <Box sx={{
