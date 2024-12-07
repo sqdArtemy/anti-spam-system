@@ -124,7 +124,8 @@ class GameFinalizeView(Resource):
 
             return {
                 "message": "Game and game check request updated successfully.",
-                "user_rating": user_score / game.rounds * 100
+                "user_rating": user_score / game.rounds * 100,
+                "user_score": user_score
             }, 200
 
         except Exception as e:
