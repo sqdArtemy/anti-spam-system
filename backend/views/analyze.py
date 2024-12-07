@@ -41,21 +41,12 @@ class AnalyzeAPI(Resource):
         email_content = text or None
         image_path = None
 
-        if input_type == "text":
-            word_count = len(text.split())
-
-            if word_count < 10:
-                word_number = 1
-            else:
-                word_number = min(max(2, word_count // 10), 12)
-
         if input_type == "image":
             image_path = minio_service.upload_image(image)
 
         payload = {
             "email": email_content,
             "image_path": image_path,
-            "words_number": word_number if word_number else 5
         }
 
         try:
@@ -69,13 +60,14 @@ class AnalyzeAPI(Resource):
         confidence = result.get("confidence")
         important_words = result.get("important_words")
         time_taken = result.get("time_taken")
+        text = result.get("text")
 
         important_words_dict = {word: score for word, score in important_words}
 
         try:
             with transaction():
                 data = {
-                    "input": text if input_type == "text" else None,
+                    "input": text,
                     "output": json.dumps(result),
                     "is_sus": is_suspicious,
                     "confidence": confidence,
