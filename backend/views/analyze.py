@@ -47,6 +47,7 @@ class AnalyzeAPI(Resource):
         payload = {
             "email": email_content,
             "image_path": image_path,
+            "words_number": word_number,
         }
 
         try:

@@ -29,6 +29,16 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     command: server /data --console-address ":9001"
+  redis:
+    container_name: redis
+    image: redis:alpine
+    networks:
+      - anti-spam-network
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
   temporal:
     container_name: temporal
     depends_on:
@@ -99,6 +109,46 @@ services:
       "
     networks:
       - anti-spam-network
+  flask-app:
+    container_name: flask-app
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    environment:
+      - FLASK_ENV=${FLASK_ENV}
+      - DATABASE_URL=${DATABASE_URL}
+      - FLASK_APP=${FLASK_APP}
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PW=${POSTGRES_PW}
+      - POSTGRES_URL=${POSTGRES_URL}
+      - POSTGRES_URL=${POSTGRES_URL}
+
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_DB=${REDIS_DB}
+
+      - TASK_QUEUE=${TASK_QUEUE}
+      - TEMPORAL_URL=${TEMPORAL_URL}
+
+      - MINIO_HOST=${MINIO_HOST}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
+    depends_on:
+      - postgresql
+      - worker-app
+      - mc
+      - redis
+    networks:
+      - anti-spam-network
+    ports:
+      - "8096:8096"
+    volumes:
+      - ./backend:/backend
+
   mysql:
     container_name: bot-mysql
     environment:
@@ -138,6 +188,9 @@ volumes:
     driver: local
   minio_volume:
     driver: local
+  redis_data:
+    driver: local
+
 
 networks:
   anti-spam-network:
