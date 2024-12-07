@@ -34,7 +34,7 @@ class AssignCheckRequestsAPI(Resource):
 
             try:
                 response = requests.post(
-                    "http://127.0.0.1:5000/analyze",
+                    "http://localhost:8096/analyze",
                     data={
                         "text": email_content,
                         "word_number": 10
