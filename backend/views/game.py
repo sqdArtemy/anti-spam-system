@@ -145,11 +145,9 @@ class TopPlayersView(Resource):
                 .join(Game, Game.user_id == User.id)
                 .filter(Game.rounds > 0)
                 .order_by(((Game.user_score / Game.rounds) * 100).desc())
-                .limit(10)
                 .all()
             )
 
-            # Construct the response
             top_players_list = [
                 {
                     "user_name": player.user_name,

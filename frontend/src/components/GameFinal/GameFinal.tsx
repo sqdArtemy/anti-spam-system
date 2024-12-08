@@ -21,20 +21,36 @@ import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import gameStore from '../../stores/GameStore';
 import {useNavigate} from "react-router-dom";
+import {autorun} from "mobx";
 
 const GameFinal = observer(() => {
     const navigate = useNavigate();
     useEffect(() => {
+
         gameStore.finishState = 'pending';
         gameStore.currentState = 'pending';
         if (!gameStore.finishData) {
             console.error("No finish data available!");
         }
 
-        if (!gameStore.leaderboard) {
-            gameStore.getTopPlayers();
-        }
     }, []);
+
+    useEffect(() => {
+        gameStore.getTopPlayers();
+        autorun(() => {
+
+            if (gameStore.topPlayersState === 'success') {
+                console.log("Top Players: ", gameStore.topPlayers);
+                gameStore.topPlayersState = 'pending';
+            } else if (gameStore.topPlayersState === 'error') {
+                console.error("Error: ", gameStore.errorMsg);
+                gameStore.topPlayersState = 'pending';
+            }
+
+
+        });
+    }, []);
+
 
     const renderTickCross = (humanAnswer: boolean, actualAnswer: boolean) => {
         return humanAnswer === actualAnswer ? <CheckIcon color="success"/> : <ClearIcon color="error"/>;

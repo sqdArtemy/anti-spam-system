@@ -174,7 +174,7 @@ const SpamDetector = observer(() => {
                                     overflowY: "auto",
                                 }}
                             >
-                                {highlightText(analyzedText, importantWords)}
+                                {highlightText(analyzedText!, importantWords)}
                             </Box>
                         )}
                         <Box sx={{
