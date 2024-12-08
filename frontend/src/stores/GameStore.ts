@@ -1,7 +1,7 @@
 import {makeAutoObservable} from 'mobx';
 import {gameService} from '../api/services/gameService';
 import {AxiosError, AxiosResponse} from 'axios';
-import {IGameData, IGameFinishResponse, IPlayerLeaderboard} from '../api/interfaces/responses/game';
+import {IGameData, IGameFinishResponse, IPlayerLeaderboard, ITopPlayer} from '../api/interfaces/responses/game';
 import {IGameAnalysis} from '../api/interfaces/requests/game';
 
 type GameState = 'pending' | 'loading' | 'success' | 'error';
@@ -52,13 +52,22 @@ class GameStore {
     }
 
     get topPlayers(): IPlayerLeaderboard['topPlayers'] | null {
-        if (!this.leaderboard) {
-            this.getTopPlayers();
-        }
+        this.getTopPlayers();
 
         const sortedPlayers = this.leaderboard?.topPlayers?.slice().sort((a, b) => b.scorePercentage - a.scorePercentage) || [];
 
-        return sortedPlayers.slice(0, 10);
+        const uniquePlayers: ITopPlayer[] = [];
+
+        sortedPlayers.forEach((player) => {
+            const found = uniquePlayers.find((uniquePlayer) => uniquePlayer.userName === player.userName);
+            if (!found) {
+                uniquePlayers.push(player);
+            } else if (found.scorePercentage < player.scorePercentage) {
+                uniquePlayers[uniquePlayers.indexOf(found)] = player;
+            }
+        });
+
+        return uniquePlayers.slice(0, 10);
     }
 
 
