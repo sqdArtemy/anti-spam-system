@@ -68,7 +68,7 @@ const Profile = observer(() => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 p: 4,
-                minHeight: '100vh',
+                minHeight: '100%',
             }}
         >
             <Box
@@ -147,9 +147,6 @@ const Profile = observer(() => {
                             }
                         />
                     </Box>
-                    <IconButton aria-label="edit email" sx={{ml: 2}}>
-                        <EditIcon/>
-                    </IconButton>
                 </Box>
 
                 <Box sx={{display: 'flex', flexDirection: 'column', mb: 3}}>
@@ -173,15 +170,26 @@ const Profile = observer(() => {
                     </Typography>
                 )}
 
-                <Button
-                    variant="contained"
-                    color="primary"
-                    // onClick={handleUpdate}
-                    disabled={loading}
-                    fullWidth
+                <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
                 >
-                    {loading ? 'Updating...' : 'Update'}
-                </Button>
+
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        // onClick={handleUpdate}
+                        disabled={loading}
+                        // fullWidth
+                        sx={{width: "100%"}}
+
+                    >
+                        {loading ? 'Updating...' : 'Update'}
+                    </Button>
+                </Box>
             </Paper>
         </Box>
     );

@@ -12,6 +12,7 @@ services:
     ports:
       - 5432:5432
     volumes:
+      - ./postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
       - /var/lib/postgresql/data
   minio:
     hostname: minio
@@ -147,19 +148,27 @@ services:
     ports:
       - "8096:8096"
     volumes:
-      - ./backend:/backend
+      - flask_app_volume:/app
+    command: > 
+      sh -c "flask db upgrade && python app.py --host=0.0.0.0 --port=8096"
 
   mysql:
     container_name: bot-mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_EXTRA_ARGS: --innodb-force-recovery=1
     image: mysql:${MYSQL_VERSION}
     networks:
       - anti-spam-network
     ports:
       - 3307:3306
     volumes:
-      - /var/lib/mysql:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - todo_db:/var/lib/mysql
+
+
+
+
   bot-app:
     container_name: bot-app
     build:
@@ -179,8 +188,16 @@ services:
       - anti-spam-network
     ports:
       - 3003:3003
-    volumes:
-      - ../bot:/app
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    networks:
+      - anti-spam-network
+    ports:
+      - 3000:3000
 
 
 volumes:
@@ -188,7 +205,10 @@ volumes:
     driver: local
   minio_volume:
     driver: local
+  todo_db: { }
   redis_data:
+    driver: local
+  flask_app_volume:
     driver: local
 
 

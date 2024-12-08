@@ -18,6 +18,7 @@ export interface IAnalysisResponse {
         importantWords: ImportantWords;
         timeTaken: number;
         sentiment: SentimentAnalysis | string;
+        text?: string;
     };
     isSus: boolean;
     confidence: number;

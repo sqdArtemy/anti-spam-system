@@ -17,7 +17,6 @@ import {SentimentAnalysis} from "../../api/interfaces/responses/analysis.ts"; //
 interface ImportantWords {
     [key: string]: number;
 }
-
 const SpamDetector = observer(() => {
     const [text, setText] = useState("");
     const [image, setImage] = useState<File | null>(null);
@@ -30,6 +29,8 @@ const SpamDetector = observer(() => {
                 alert("Error: " + analysisStore.errorMessage); // Handle errors
             } else if (analysisStore.state === "success") {
                 console.log("Analysis success:", analysisStore._analysisData);
+                // Clear the image preview after successful analysis
+                setImagePreview(null);
             } else if (analysisStore.state === "loading") {
                 console.log("Analysis in progress...");
             }
@@ -97,8 +98,12 @@ const SpamDetector = observer(() => {
         ? analysisStore._analysisData.output.importantWords
         : {};
 
+    const analyzedText = analysisStore.state === "success"
+        ? analysisStore._analysisData.output.text
+        : text;
+
     return (
-        <Box sx={{display: "flex", justifyContent: "center", p: 4, minHeight: "100%"}}>
+        <Box sx={{display: "flex", justifyContent: "center", minHeight: "100%", alignItems: 'center'}}>
             <Box sx={{width: "100%", maxWidth: 1200, display: "flex", flexDirection: "column", position: "relative"}}>
                 <Typography variant="h4" fontWeight="bold" gutterBottom sx={{textAlign: "left", margin: 0}}>
                     Spam Detector
@@ -157,6 +162,7 @@ const SpamDetector = observer(() => {
                                 }}
                             />
                         )}
+
                         {analysisStore.state === "success" && !imagePreview && (
                             <Box
                                 sx={{
@@ -168,7 +174,7 @@ const SpamDetector = observer(() => {
                                     overflowY: "auto",
                                 }}
                             >
-                                {highlightText(text, importantWords)}
+                                {highlightText(analyzedText!, importantWords)}
                             </Box>
                         )}
                         <Box sx={{
@@ -318,7 +324,6 @@ const SpamDetector = observer(() => {
                                                                 ),
                                                             }}
                                                         />
-
                                                     </Box>
                                                     <Typography
                                                         variant="body2"

@@ -3,7 +3,7 @@ import {snakeToCamel, camelToSnake, getErrorMessage} from './utils.ts';
 import {authService} from "./services/authService.ts";
 
 export const axiosInstance = axios.create({
-    baseURL: 'http://127.0.0.1:5000',
+    baseURL: 'http://127.0.0.1:8096',
 });
 
 axiosInstance.interceptors.request.use(

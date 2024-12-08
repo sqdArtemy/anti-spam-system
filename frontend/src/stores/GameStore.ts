@@ -1,7 +1,7 @@
 import {makeAutoObservable} from 'mobx';
 import {gameService} from '../api/services/gameService';
 import {AxiosError, AxiosResponse} from 'axios';
-import {IGameData, IGameFinishResponse, IPlayerLeaderboard} from '../api/interfaces/responses/game';
+import {IGameData, IGameFinishResponse, IPlayerLeaderboard, ITopPlayer} from '../api/interfaces/responses/game';
 import {IGameAnalysis} from '../api/interfaces/requests/game';
 
 type GameState = 'pending' | 'loading' | 'success' | 'error';
@@ -11,6 +11,7 @@ class GameStore {
     state: GameState = 'pending';
 
     finishState: GameState = 'pending';
+    topPlayersState: GameState = 'pending';
     finalData: IGameAnalysis & { score: number } | null = null;
 
     errorMessage: string = '';
@@ -52,13 +53,22 @@ class GameStore {
     }
 
     get topPlayers(): IPlayerLeaderboard['topPlayers'] | null {
-        if (!this.leaderboard) {
-            this.getTopPlayers();
-        }
+        const sortedPlayers = this.leaderboard?.topPlayers.slice().sort((a, b) => b.scorePercentage - a.scorePercentage) || [];
 
-        const sortedPlayers = this.leaderboard?.topPlayers?.slice().sort((a, b) => b.scorePercentage - a.scorePercentage) || [];
+        const uniquePlayers: ITopPlayer[] = [];
 
-        return sortedPlayers.slice(0, 10);
+        sortedPlayers.forEach((player) => {
+            const found = uniquePlayers.find((uniquePlayer) => uniquePlayer.userName === player.userName);
+            if (!found) {
+                uniquePlayers.push(player);
+            } else if (found.scorePercentage < player.scorePercentage) {
+                uniquePlayers[uniquePlayers.indexOf(found)] = player;
+            }
+        });
+
+        console.log("Unique Players: ", uniquePlayers);
+
+        return uniquePlayers.slice(0, 10);
     }
 
 
@@ -68,6 +78,7 @@ class GameStore {
         this.data = {gameId: 0, checkRequests: []};
         this.leaderboard = null;
         this.finishState = 'pending';
+        this.topPlayersState = 'pending';
         this.finalData = null;
     }
 
@@ -106,7 +117,7 @@ class GameStore {
     };
 
     getTopPlayers() {
-        this.currentState = 'loading';
+        this.topPlayersState = 'loading';
         gameService
             .getTopPlayers()
             .then(this.getTopPlayersSuccess, this.getTopPlayersFailure);
@@ -115,11 +126,11 @@ class GameStore {
     getTopPlayersSuccess = ({data}: AxiosResponse<IPlayerLeaderboard>) => {
         this.leaderboard = data;
         console.log("data: ", data);
-        this.currentState = 'success';
+        this.topPlayersState = 'success';
     };
 
     getTopPlayersFailure = ({response}: AxiosError<string>) => {
-        this.currentState = 'error';
+        this.topPlayersState = 'error';
         this.errorMsg = response?.data || 'Failed to fetch leaderboard';
     };
 

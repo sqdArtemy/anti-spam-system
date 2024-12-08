@@ -21,16 +21,21 @@ const GameProcess = observer(() => {
     useEffect(() => {
 
         autorun(() => {
+
             if (gameStore.state === "success" && gameStore.data.gameId !== -1) {
                 const initialIdentifications = new Array(totalLetters).fill(null);
                 setCorrectlyIdentified(initialIdentifications);
+                gameStore.currentState = "pending";
             } else if (gameStore.state === "error") {
                 console.error("Error: ", gameStore.errorMsg);
+                gameStore.currentState = "pending";
             }
 
             if (gameStore.finishState === "success") {
                 navigate("/main/game/finish");
             }
+
+
         });
 
         const timerInterval = setInterval(() => {
@@ -39,6 +44,22 @@ const GameProcess = observer(() => {
 
         return () => clearInterval(timerInterval);
     }, [totalLetters]);
+
+    useEffect(() => {
+        gameStore.getTopPlayers();
+        autorun(() => {
+            if (gameStore.topPlayersState === 'success') {
+                console.log("Top Players: ", gameStore.topPlayers);
+                gameStore.topPlayersState = 'pending';
+            } else if (gameStore.topPlayersState === 'error') {
+                console.error("Error: ", gameStore.errorMsg);
+                gameStore.topPlayersState = 'pending';
+            }
+
+
+        });
+    }, []);
+
 
     const handleDecision = (decision: "spam" | "not spam") => {
         const currentRequest = gameStore.data.checkRequests[currentLetterIndex];
@@ -206,7 +227,7 @@ const GameProcess = observer(() => {
                         <Typography variant="h6" fontWeight="bold" sx={{textAlign: "center"}}>🏆 TOP 10
                             Players</Typography>
                         <List sx={{width: "100%", padding: 0, marginTop: 3}}>
-                            {gameStore.topPlayers?.map((player, index) => (
+                            {gameStore.topPlayers!.map((player, index) => (
                                 <ListItem key={`${player.userName}-${index}`} sx={{
                                     display: "flex",
                                     alignItems: "center",

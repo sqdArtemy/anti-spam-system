@@ -11,13 +11,26 @@ const GameStart = observer(() => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        gameStore.getTopPlayers();
         autorun(() => {
+            console.log("Game Store State: ", gameStore.currentState);
             if (gameStore.state === 'success' && gameStore.data.gameId !== -1) {
                 console.log("Game Initialized: ", gameStore.data.gameId);
+                gameStore.currentState = 'pending';
                 navigate('/main/game/process');
             } else if (gameStore.state === 'error') {
                 console.error("Error: ", gameStore.errorMsg);
+                gameStore.currentState = 'pending';
             }
+
+            if (gameStore.topPlayersState === 'success') {
+                console.log("Top Players: ", gameStore.topPlayers);
+                gameStore.topPlayersState = 'pending';
+            } else if (gameStore.topPlayersState === 'error') {
+                console.error("Error: ", gameStore.errorMsg);
+                gameStore.topPlayersState = 'pending';
+            }
+
 
         });
     }, []);
@@ -113,7 +126,6 @@ const GameStart = observer(() => {
                     </Card>
                 </Stack>
 
-                {/* Top 10 Players Card */}
                 <Card
                     variant="outlined"
                     sx={{
