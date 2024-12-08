@@ -8,8 +8,8 @@ def env_generator() -> None:
     with open(".env", 'w') as env_file:
         env_file.write(f"""SECRET_KEY="{secrets.token_urlsafe(32)}"
 JWT_SECRET_KEY="{secrets.token_urlsafe(32)}"
-POSTGRES_USER="postgres"
-POSTGRES_PW="admin"
+POSTGRES_USER="temporal"
+POSTGRES_PW="temporal"
 POSTGRES_URL="127.0.0.1:5432"
 POSTGRES_DB="spam_system"
 REDIS_HOST="127.0.0.1"

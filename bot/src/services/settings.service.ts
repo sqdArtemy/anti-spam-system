@@ -13,6 +13,7 @@ import { UserSettingsService } from "./settings/userSettings.service";
 import { WhitelistSettingsService } from "./settings/whitelistSettings.service";
 import { BanSettingsService } from "./settings/banSettings.service";
 import { ConfidenceSettingsService } from "./settings/confidenceSettings.service";
+import {logger} from "../logger/logger";
 
 export type UserState =
   | "ban_threshold"
@@ -78,6 +79,7 @@ export class SettingsService implements ISettingsService {
   };
 
   handleInput = async (ctx: Context) => {
+    logger.bot.info("HANDLE INPUT");
     const userState = this.userStates.get(ctx.chat?.id!);
     const groupId = ctx.chat?.id!;
     const memberId = ctx.from?.id!;

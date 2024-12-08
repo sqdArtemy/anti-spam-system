@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8096
 
-CMD ["sh", "-c", "python env_gen.py && flask db upgrade && python app.py"]
+CMD ["sh", "-c", "python env_gen.py && python app.py"]
