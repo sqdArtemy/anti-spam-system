@@ -46,7 +46,7 @@
 
   
 
-![[product-screenshot.png]]
+![Product Screenshot](./product-screenshot.png)
 
 In this context the Anti-Spam System project’s goal has to do with discriminating in an efficient manner against the emerging problem in the sphere of spam email. By implementing machine learning algorithms such as natural language processing together with Artificial intelligence, the AS system will accurately identify spam information flow and block unnecessary messages for the users which in turn will be useful for creation of a healthy and safe social platform for the end users.
   
@@ -89,19 +89,17 @@ In this section the way of running project locally will be shown, it is suggeste
 
 1. Clone the repo
 
-   ```sh
-
-   git clone https://github.com/sqdArtemy/anti-spam-system
-
-   ```
+```sh
+git clone https://github.com/sqdArtemy/anti-spam-system
+```
 
 2. Compose the docker file
 
-   ```sh
+```sh
 
-   docker compose -f .\devops\docker-compose.yaml up --build
+docker compose -f .\devops\docker-compose.yaml up --build
 
-   ```
+```
 
 ## Documentation
 
